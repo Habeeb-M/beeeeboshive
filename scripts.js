@@ -29,7 +29,7 @@ function backgroundUpdate() {
     if (pauseCheckbox.checked) return; //don't run if paused
     
     let date = new Date();
-    currentIndex = date.getSeconds() % 20 + 1; //replace with hours eventually
+    currentIndex = date.getSeconds() % 24 + 1; //replace with hours eventually
 
     var nextImage = `url('img/${currentIndex}.png')`;
     updateImage(currentImage, nextImage)
@@ -139,8 +139,8 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
 }
 
 
-function timeToIndex(x) { //now just record a loop of 2 days. dont have to deal with wrapping it around the end of the video
-    return x
+function indexToTime(x) { //now just record a loop of 2 days. dont have to deal with wrapping it around the end of the video
+    return x*125/24
 }
 
 
@@ -148,7 +148,7 @@ sendButton.addEventListener('click', function() {
     if (currentIndex == stopInput.value) return;
 
     console.log(currentIndex)
-    easedVideo(currentIndex, stopInput.value, timeToIndex(stopInput.value));
+    easedVideo(indexToTime(currentIndex), indexToTime(stopInput.value), stopInput.value);
     //console.log(currentIndex, stopInput.value)
 });
 
@@ -160,7 +160,7 @@ sendButton.addEventListener('click', function() {
 function updateTime() {
             var now = new Date();
             var options = { hour: 'numeric', minute: '2-digit', hour12: false };
-            document.getElementById("currentTime").innerHTML = now.toLocaleTimeString([], options);
+            document.getElementById("funCurrentTime").innerHTML = now.toLocaleTimeString([], options);
         }
         
 updateTime(); //run on page load and update every second - could optimise to every minute
@@ -169,6 +169,20 @@ setInterval(updateTime, 1000);
 
 
 function honeyProduction() {
-    var now = new Date();
-    const month = now.getMonth()
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const startOfYear = new Date(currentYear, 0, 1);
+    const elapsedMs = (now - startOfYear) / (24 * 60 * 60 * 1000);
+
+    //console.log(elapsedMs, honeyProductionValue(elapsedMs))
+
+    function sunExposure(x) {
+        return Math.sin(2*Math.PI*x+1.64)-0.56*Math.sin(2*Math.PI*x/365 - 7.72)
+    }
+    function honeyProductionValue(x) {
+        return 50*(1+Math.sin(2*Math.PI*x/365 + 1/2))*Math.max(0, -sunExposure(x))
+    }
+    document.getElementById("funCurrentHoney").innerHTML = honeyProductionValue(elapsedMs);
 }
+honeyProduction();
+
