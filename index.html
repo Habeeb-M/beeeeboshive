@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>test2</title>
+    <link rel="stylesheet" href="style2.css">
+  </head>
+
+
+  <body>
+    <div id="bg-bottom" class="bg-layer"></div>
+    <div id="bg-top" class="bg-layer"></div>
+
+    <label for="pauseCheckbox">
+        <input id="pauseCheckbox" type="checkbox" onclick="pauseFunction()">
+        pause
+    </label> <br>
+
+    <label for="startInput" class="pauseControls">
+        start:</label>
+    <input id="startInput" type="number" value="0" class="pauseControls">
+    <label for="stopInput" class="pauseControls">
+        stop:</label>
+    <input id="stopInput" type="number" value="20" class="pauseControls">
+    <button id="sendButton" class="pauseControls">
+        Apply</button>
+
+
+    <video id="bg-video" muted class="bg-layer" src="../img/test2.mp4"></video><br>
+    
+
+
+
+    <script src="scripts2.js"></script>
+  </body>
+</html>
