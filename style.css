@@ -1,3 +1,17 @@
+/* RESET */
+@import "normalize.css";
+
+
+/*fonts*/
+
+@font-face {
+  font-family: myFont; /* set name */
+  src: url(img/Alkhemikal.ttf); /* url of the font */
+}
+
+
+
+/*background stuff*/
 .bg-layer {
     position: fixed;
     top: 0;
@@ -13,4 +27,54 @@
     transition: opacity 500ms ease-in-out; /*can increase this, match buffer in js*/
 }
 
+.pauseCheckboxLayer {
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    color: #fff;
+}
 
+
+/*content*/
+html {
+     background: #b2b2b2 no-repeat;
+     font-family: myFont; /* use font */
+     font-size: 20px;
+     font-weight: 100;
+}
+
+.placeholder {
+    background: rgb(233, 233, 207);
+    padding: 20px;
+    margin: 10px;
+}
+
+.title {
+    position: relative;
+    margin-top: 0px;
+    top: 0px;
+    width: 50%;
+}
+
+.title img {
+    image-rendering: pixelated;
+    width: 70%
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    height: 300px;
+    align-items: flex-start;
+}
+
+.container div { /* stuff in the container */
+    display: inline-block;
+    width: 18%;
+}
+
+nav {
+    float: left;
+    height: 400px;
+    width: 5%;
+}

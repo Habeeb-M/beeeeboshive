@@ -139,7 +139,7 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
 }
 
 
-function timeToIndex(x) {
+function timeToIndex(x) { //now just record a loop of 2 days. dont have to deal with wrapping it around the end of the video
     return x
 }
 
