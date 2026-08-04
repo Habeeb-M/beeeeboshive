@@ -67,8 +67,7 @@ window.addEventListener('DOMContentLoaded', pauseFunction) //run on site load
 
 
 //VIDEO TRANSITION
-//const videoLayer = document.getElementById('videoLayer');
-const startInput = document.getElementById('startInput');
+//const startInput = document.getElementById('startInput'); temporary start button
 const stopInput = document.getElementById('stopInput');
 const sendButton = document.getElementById('sendButton');
 
@@ -94,16 +93,17 @@ function linearVideo() { //not used... just for testing
 }
 
 
-//ease function is 3*x**2 - 2*x**3, but we use derivative, and with a minimum speed to avoid framiness
+//just a speed function on [0,1] that starts/ends at 1 and speeds up in middle
 function easeFunction(x) {
-    return Math.max(0.5, (6*x-6*x**2))
+    return 1+10*x*(1-x)
 }
 
 
 function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from start to stop and replaces background at end
-    videoLayer.style.display = "";
     videoLayer.currentTime = startInput;
-    const N = 10; //amount of updates of playback speed
+
+    videoLayer.style.display = "";
+    const N = 40; //amount of updates of playback speed
     const totalTime = stopInput - startInput;
     const dt = totalTime/N;
 
@@ -133,9 +133,8 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
 
     playbackUpdateInterval = setInterval(playbackRateUpdate, dt*1000); //update playbackspeed every dt
     function playbackRateUpdate(time) {
-        //console.log(video.currentTime)
-        //console.log(easeFunction(video.currentTime/totalTime))
-        videoLayer.playbackRate = easeFunction(videoLayer.currentTime/totalTime)
+        //console.log((videoLayer.currentTime-startInput)/totalTime)
+        videoLayer.playbackRate = easeFunction((videoLayer.currentTime-startInput)/totalTime)
     }    
 }
 
