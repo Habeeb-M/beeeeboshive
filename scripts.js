@@ -154,3 +154,21 @@ sendButton.addEventListener('click', function() {
 
 
 
+// FUN STUFF
+
+//home page
+function updateTime() {
+            var now = new Date();
+            var options = { hour: 'numeric', minute: '2-digit', hour12: false };
+            document.getElementById("currentTime").innerHTML = now.toLocaleTimeString([], options);
+        }
+        
+updateTime(); //run on page load and update every second - could optimise to every minute
+setInterval(updateTime, 1000);
+
+
+
+function honeyProduction() {
+    var now = new Date();
+    const month = now.getMonth()
+}
