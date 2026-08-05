@@ -169,12 +169,14 @@ updateTime(); //run on page load and update every second - could optimise to eve
 setInterval(updateTime, 1000);
 
 
-//now is a global variable, now = Date, runs on site load
+
+//run this on site load, fills in funny splash text and stuff
 function honeyFun() {
+
+    //honey production %
     const currentYear = now.getFullYear();
     const startOfYear = new Date(currentYear, 0, 1);
     const currentDay = (now - startOfYear) / (24 * 60 * 60 * 1000); //1 is a day, goes up to 365
-
     //console.log(currentDay, honeyProductionValue(currentDay))
 
     function sunExposure(x) {
@@ -186,12 +188,14 @@ function honeyFun() {
     document.getElementById("funCurrentHoney").innerHTML = honeyProductionValue(currentDay);
 
 
-    
+
+    // honey splash 1, 2 - time, season
     function sunriseTime(x) { return 0.1*Math.sin(2*Math.PI*x/365.3 + 1.61) + 0.19 }
     function sunsetTime(x) { return 0.1*Math.sin(2*Math.PI*x/365.3 - 1.32) + 0.79 }
     const currentTime = currentDay - Math.trunc(currentDay)
 
     let honeySplash = "";
+    let honeySplashSeason = "";
     //console.log(currentTime, sunriseTime(currentDay), sunsetTime(currentDay))
     
     if (sunriseTime(currentDay) - 0.05 < currentTime && currentTime <= sunriseTime(currentDay)) {
@@ -207,7 +211,62 @@ function honeyFun() {
         honeySplash = "bees are resting!";
     }
 
+    // honey splash 2 
+    if (60 <= currentDay && currentDay <= 151) {
+        honeySplashSeason = "larvae production is ramping up for spring!";
+    }
+    else if (152 <= currentDay && currentDay <= 243) {
+        honeySplashSeason = "bees are out pollinating for summer!";
+    }
+    else if (244 <= currentDay && currentDay <= 334) {
+        honeySplashSeason = "bees are slowing down for autumn!";
+    }
+    else {
+        honeySplashSeason = "bees are conserving their energy for winter!"
+    }
+
+
+
+    //honey splash 3 - area
+    currentDayRounded = Math.round(currentDay+0.5);
+    funExplorationArea = [" patch", " grove", " field", "n orchard"]
+    let rng1 = mulberry32(currentDayRounded)*funExplorationArea.length
+    //console.log(mulberry32(currentDayRounded))
+
+
+    //honey splash 4 - flora
+    funExplorationFlora = ["marigolds", "apple trees", "tulips", "forget-me-nots"]
+    let rng2 = mulberry32(rng1)*funExplorationFlora.length
+
+
+    //honey splash 5 - research
+    funResearch = ["tougher comb structures are being researched…",
+
+    ]
+    let rng3 = mulberry32(rng2)*funResearch.length
+
+    //honey splash 6 - status
+    funStatus = ["hive repairs are underway…",
+
+    ]
+    let rng4 = mulberry32(rng3)*funStatus.length
+
+    console.log(rng1,rng2,rng3,rng4)
     document.getElementById("funHoneySplash").innerHTML = honeySplash;
+    document.getElementById("funHoneySplashSeason").innerHTML = honeySplashSeason;
+    document.getElementById("funExplorationArea").innerHTML = funExplorationArea[Math.round(rng1)];
+    document.getElementById("funExplorationFlora").innerHTML = funExplorationFlora[Math.round(rng2)];
+    document.getElementById("funResearch").innerHTML = funResearch[Math.round(rng3)];
+    document.getElementById("funStatus").innerHTML = funStatus[Math.round(rng4)];
 }
 honeyFun()   
-//honeySentence()
+
+
+
+//pseudoRNG with a seed
+function mulberry32(mySeed) {
+    let t = mySeed += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
