@@ -31,11 +31,11 @@ function backgroundUpdate() {
     let date = new Date();
     currentIndex = date.getSeconds() % 24 + 1; //replace with hours eventually
 
-    var nextImage = `url('img/${currentIndex}.png')`;
+    let nextImage = `url('img/${currentIndex}.png')`;
     updateImage(currentImage, nextImage)
     currentImage = nextImage //update currentimage
 }
-var backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval); //and run this every updateinterval
+let backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval); //and run this every updateinterval
 
 
 
@@ -155,11 +155,13 @@ sendButton.addEventListener('click', function() {
 
 
 // FUN STUFF
+let now = new Date();
+
 
 //home page
 function updateTime() {
-            var now = new Date();
-            var options = { hour: 'numeric', minute: '2-digit', hour12: false };
+            let now = new Date();
+            const options = { hour: 'numeric', minute: '2-digit', hour12: false };
             document.getElementById("funCurrentTime").innerHTML = now.toLocaleTimeString([], options);
         }
         
@@ -167,22 +169,45 @@ updateTime(); //run on page load and update every second - could optimise to eve
 setInterval(updateTime, 1000);
 
 
-
-function honeyProduction() {
-    const now = new Date();
+//now is a global variable, now = Date, runs on site load
+function honeyFun() {
     const currentYear = now.getFullYear();
     const startOfYear = new Date(currentYear, 0, 1);
-    const elapsedMs = (now - startOfYear) / (24 * 60 * 60 * 1000);
+    const currentDay = (now - startOfYear) / (24 * 60 * 60 * 1000); //1 is a day, goes up to 365
 
-    //console.log(elapsedMs, honeyProductionValue(elapsedMs))
+    //console.log(currentDay, honeyProductionValue(currentDay))
 
     function sunExposure(x) {
-        return Math.sin(2*Math.PI*x+1.64)-0.56*Math.sin(2*Math.PI*x/365 - 7.72)
+        return -(Math.sin(2*Math.PI*x+1.64)-0.56*Math.sin(2*Math.PI*x/365 - 7.72));
     }
     function honeyProductionValue(x) {
-        return 50*(1+Math.sin(2*Math.PI*x/365 + 1/2))*Math.max(0, -sunExposure(x))
+        return Math.round(500*(1+Math.sin(2*Math.PI*x/365 + 1/2))*Math.max(0, sunExposure(x)))/10;
     }
-    document.getElementById("funCurrentHoney").innerHTML = honeyProductionValue(elapsedMs);
-}
-honeyProduction();
+    document.getElementById("funCurrentHoney").innerHTML = honeyProductionValue(currentDay);
 
+
+    
+    function sunriseTime(x) { return 0.1*Math.sin(2*Math.PI*x/365.3 + 1.61) + 0.19 }
+    function sunsetTime(x) { return 0.1*Math.sin(2*Math.PI*x/365.3 - 1.32) + 0.79 }
+    const currentTime = currentDay - Math.trunc(currentDay)
+
+    let honeySplash = "";
+    //console.log(currentTime, sunriseTime(currentDay), sunsetTime(currentDay))
+    
+    if (sunriseTime(currentDay) - 0.05 < currentTime && currentTime <= sunriseTime(currentDay)) {
+        honeySplash = "bees are waking up!";
+    }
+    else if (sunriseTime(currentDay) < currentTime && currentTime <= 0.6) {
+        honeySplash = "bees are out pollinating!";
+    }
+    else if (0.6 < currentTime && currentTime <= sunsetTime(currentDay) + 0.05 ) {
+        honeySplash = "bees are returning home!";
+    }
+    else{
+        honeySplash = "bees are resting!";
+    }
+
+    document.getElementById("funHoneySplash").innerHTML = honeySplash;
+}
+honeyFun()   
+//honeySentence()
