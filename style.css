@@ -16,7 +16,7 @@
     position: fixed;
     top: 0;
     right: 0;
-    width: 50%;
+    width: 40%;
     height: 100%;
     z-index: -1; 
     background-size: cover;      
@@ -27,54 +27,77 @@
     transition: opacity 500ms ease-in-out; /*can increase this, match buffer in js*/
 }
 
-.pauseCheckboxLayer {
-    position: fixed;
-    right: 0px;
-    bottom: 0px;
-    color: #fff;
-}
 
 
 /*content*/
 html {
-     background: #b2b2b2 no-repeat;
+     background: #1A2E22 no-repeat;
      font-family: myFont; /* use font */
      font-size: 20px;
      font-weight: 100;
+     color: #FFFBF0;
 }
 
 .placeholder {
-    background: rgb(233, 233, 207);
+    background: #3B5E47;
     padding: 20px;
-    margin: 10px;
+    margin: 5px;
 }
+
+
 
 .title {
     position: relative;
     margin-top: 0px;
     top: 0px;
-    width: 50%;
+    width: 520px;
+    display: inline-block;
+    padding: 20px;
+    margin: 5px;
 }
 
 .title img {
     image-rendering: pixelated;
-    width: 70%
+    width: 100%
+}
+
+.controls {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 0px;
+}
+
+.controls #stopInput {
+    display: inline-block;
+    width: 100px;
+}
+
+
+
+
+.page {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    margin-left: 5px;
 }
 
 .container {
-    display: flex;
-    flex-direction: row;
-    height: 300px;
-    align-items: flex-start;
-}
-
-.container div { /* stuff in the container */
-    display: inline-block;
-    width: 18%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    max-width: 900px;  
+    width: 100%;       
+    flex-grow: 1; 
 }
 
 nav {
-    float: left;
     height: 400px;
-    width: 5%;
+    width: 100px;
+    flex-shrink: 0;
+}
+
+
+.container div {
+    align-self: start; 
+    box-sizing: border-box;
 }

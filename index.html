@@ -14,69 +14,80 @@
     <div id="bg-bottom" class="bg-layer"></div>
     <div id="bg-top" class="bg-layer"></div>
     
-      <div class="pauseCheckboxLayer">
-      <!-- temporary start input
-      <label for="startInput" class="pauseControls">start:</label>
-      <input id="startInput" type="number" value="0" class="pauseControls">-->
       
-      <label for="stopInput" class="pauseControls">stop:</label>
-      <input id="stopInput" type="number" value="18" class="pauseControls">
-      <button id="sendButton" class="pauseControls">Apply</button>
-        
-      
-      <label for="pauseCheckbox">
-          <input id="pauseCheckbox" type="checkbox" onclick="pauseFunction()">
-          pause 
-      </label> <br>
-    </div>
 
     <video id="bg-video" muted class="bg-layer" src="img/test.mp4" controls></video>
     
 
     <!--content-->
-    <div class="placeholder title">
+    <div class="title">
         <img src="img/logo.png">
     </div>
 
-    <nav class="placeholder nav">
-        test<br>
-        testo<br>
-        testuble<br>
-    </nav>
+    <div class="placeholder controls" style="width: 26.9%; height: 177px">
+      controls<br>
+      <!-- temporary start input
+      <label for="startInput" class="pauseControls">start:</label>
+      <input id="startInput" type="number" value="0" class="pauseControls">-->
+      
+      <label for="pauseCheckbox">
+          <input id="pauseCheckbox" type="checkbox" onclick="pauseFunction()">
+          pause 
+      </label> <br>
 
-    <div class="container">  
-         <div class="placeholder">
-            [!] welcome to the hive! the time is currently <span id="funCurrentTime"></span>. <br>
-            [-] honey production is at <span id="funCurrentHoney"></span>%! <span id="funHoneySplash"></span><br>
-            [!] a<span id="funExplorationArea"></span> of nearby <span id="funExplorationFlora"></span> has been discovered!<br><br>
-            
-
-            [-] <span id="funHoneySplashSeason"></span><br>
-            [?] <span id="funResearch"></span><br>
-            [-] <br>
-         </div>  
-
-         <div class="placeholder">
-            todo... <br>
-            make a custom font? <br>
-            and like custom borders in pixel maybe? <br>
-
-         </div>  
-
-         <div class="placeholder">
-          Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. 
-          Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero 
-          sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. 
-          Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, 
-          commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros 
-          ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar 
-          facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, 
-          eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan 
-          porttitor, facilisis luctus, metus
-         </div>  
-    </div>  
+      <label for="stopInput" class="pauseControls" width="100px">stop:</label>
+      <input id="stopInput" type="number" value="18" max="24" class="pauseControls">
+      <button id="sendButton" class="pauseControls">Apply</button>
+    </div>
 
 
+    <div class="page">
+      <nav class="placeholder nav">
+          <a href="">test</a><br>
+          <a href="">testo</a><br>
+          <a href="">testuble</a><br>
+      </nav>
+
+      <div class="container">  
+           <div class="placeholder">
+              [!] welcome to the hive! the time is currently <span id="funCurrentTime"></span>. <br>
+              [-] honey production is at <span id="funCurrentHoney"></span>%! <span id="funHoneySplash"></span><br>
+              [!] a<span id="funExplorationArea"></span> of nearby <span id="funExplorationFlora"></span> has been discovered!<br><br>
+
+
+              [-] <span id="funHoneySplashSeason"></span><br>
+              [?] <span id="funResearch"></span><br>
+              [-] <span id="funStatus"></span><br>
+           </div>  
+
+           <div class="placeholder">
+              todo... <br>
+              make a custom font? <br>
+              and like custom borders in pixel maybe? <br>
+
+           </div>  
+
+           <div class="placeholder">
+            Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. 
+            Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero 
+            sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. 
+            Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, 
+            commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros 
+            ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar 
+            facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, 
+            eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan 
+            porttitor, facilisis luctus, metus
+           </div>  
+
+           <div class="placeholder">
+            a hive that separates its members by their level will have its thinking done by hackers and its fighting done by noobs
+           </div>
+
+           <div class="placeholder">something of a placeholder<br> blah<br>blah<br>blah</div>
+      </div>  
+    </div>
+    
+    
     <script src="scripts.js"></script>
   </body>
 </html>
