@@ -278,7 +278,7 @@ function honeyFun() {
     funStatus = ["hive repairs are underway...",
         "honey leakages are being patched...",
         "queen is on break.",
-        "planning permission for an extension has been mailed off...",
+        "planning permission for a hive extension has been mailed off...",
         "a patch of moss is growing on the hive...",
         "polypore spores are in the air...",
     ]
@@ -311,8 +311,8 @@ function setupMasonry() {
     const items = container.querySelectorAll('.container div');
 
     items.forEach(function(item) {
-      const contentHeight = item.getBoundingClientRect().height;
-      const rowSpan = Math.ceil(contentHeight);
+      const itemHeight = item.getBoundingClientRect().height;
+      const rowSpan = Math.ceil(itemHeight);
       item.style.gridRowEnd = `span ${rowSpan}`;
     });
 
@@ -320,5 +320,25 @@ function setupMasonry() {
     container.classList.add('masonry-ready');
   }
 
-  document.addEventListener('DOMContentLoaded', setupMasonry); //run on page load
-  window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
+document.addEventListener('DOMContentLoaded', setupMasonry); //run on page load
+window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
+
+
+function setupBorder() { //looks pretty bad
+    const items = document.querySelectorAll('.border');
+
+    items.forEach(function(item) {
+        const borderCorner = document.createElement('img');
+        borderCorner.src = 'img/bordercorner.png';
+        item.appendChild(borderCorner);
+
+        item.style.position = 'relative';
+        borderCorner.style.position = 'absolute';
+        borderCorner.style.top = '1px';
+        borderCorner.style.left = '1px';
+        borderCorner.style.width = "10%";
+        borderCorner.style.imageRendering = "pixelated";
+        }
+    )
+}
+setupBorder()
