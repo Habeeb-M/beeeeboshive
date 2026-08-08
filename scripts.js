@@ -99,8 +99,14 @@ function easeFunction(x) {
 }
 
 
+
+
 function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from start to stop and replaces background at end
     videoLayer.currentTime = startInput;
+
+    if (stopInput < startInput) {
+        stopInput += indexToTime(24)
+    }
 
     videoLayer.style.display = "";
     const N = 40; //amount of updates of playback speed
@@ -108,10 +114,11 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
     const dt = totalTime/N;
 
     videoLayer.play();
-    //console.log(startInput, "to", stopInput)
+    console.log(startInput, "to", stopInput)
 
-    videoLayer.addEventListener('timeupdate', checkPlaying); //while playing, check if stopped
+    videoLayer.addEventListener('timeupdate', checkPlaying); //while playing, check if stopped 
     function checkPlaying() {
+
         if (stopInput - videoLayer.currentTime <= buffer) {//just before end, update background  
             currentImage = `url('img/${currentIndex}.png')`;
             endImage = `url('img/${endIndex}.png')`; //update background when done
@@ -120,7 +127,7 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
         }
 
 
-        if (videoLayer.currentTime >= stopInput) { //when stops
+        if (videoLayer.currentTime >= stopInput || !pauseCheckbox.checked) { //when stops or paused
             videoLayer.pause();                  
             videoLayer.currentTime = stopInput; 
             //console.log("stopped")
@@ -138,16 +145,18 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
     }    
 }
 
-
+//ffmpeg -i test.mp4 -vf "drawtext=text='%{pts\:hms}':x=10:y=10:fontsize=24:fontcolor=white" -frame_pts 1 frame_%d.png
 function indexToTime(x) { //now just record a loop of 2 days. dont have to deal with wrapping it around the end of the video
-    return x*videoLayer.duration/24
+    const start = 3.8;
+    const end = 243.8;
+    return x*(end-start)/48 + start;
 }
 
 
-sendButton.addEventListener('click', function() {
+sendButton.addEventListener('click', function() { //start animation
     if (currentIndex == stopInput.value) return;
 
-    console.log(currentIndex)
+    console.log(currentIndex, stopInput.value, indexToTime(currentIndex), indexToTime(stopInput.value), stopInput.value)
     easedVideo(indexToTime(currentIndex), indexToTime(stopInput.value), stopInput.value);
     //console.log(currentIndex, stopInput.value)
 });
