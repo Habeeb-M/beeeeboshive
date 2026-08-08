@@ -22,42 +22,45 @@
     <!--content-->
     <div class="title">
         <img src="img/logo.png">
+        <span>the apiary..</span> 
     </div>
 
-    <div class="placeholder controls" style="width: 26.9%; height: 177px">
-      controls<br>
-      <!-- temporary start input
-      <label for="startInput" class="pauseControls">start:</label>
-      <input id="startInput" type="number" value="0" class="pauseControls">-->
-      
-      <label for="pauseCheckbox">
-          <input id="pauseCheckbox" type="checkbox" onclick="pauseFunction()">
-          pause 
-      </label> <br>
-
-      <label for="stopInput" class="pauseControls" width="100px">stop:</label>
-      <input id="stopInput" type="number" value="18" max="24" class="pauseControls">
-      <button id="sendButton" class="pauseControls">Apply</button>
-    </div>
 
 
     <div class="page">
-      <nav class="placeholder nav">
-          <a href="">test</a><br>
+      <div class="sidebar">
+        <nav class="placeholder nav">
+          <a href="#">apiary</a><br>
           <a href="">testo</a><br>
           <a href="">testuble</a><br>
-      </nav>
+        </nav>
+      
+        <div class="placeholder controls">
+        controls<br>
+        <!-- temporary start input
+        <label for="startInput" class="pauseControls">start:</label>
+        <input id="startInput" type="number" value="0" class="pauseControls">-->
+        
+        <label for="pauseCheckbox">
+            <input id="pauseCheckbox" type="checkbox" onclick="pauseFunction()">
+            pause 
+        </label> <br>
+      
+        <label for="stopInput" class="pauseControls" width="100px">stop:</label>
+        <input id="stopInput" type="number" value="18" max="24" class="pauseControls">
+        <button id="sendButton" class="pauseControls">Apply</button>
+        </div>
+      </div>
 
       <div class="container">  
            <div class="placeholder double-width">
-              <img src="img/funExclaim.png" class="funIcon"> welcome to the hive! the time is currently <span id="funCurrentTime"></span>. <br>
-              <img src="img/funDash.png" class="funIcon"> honey production is at <span id="funCurrentHoney"></span>%! <span id="funHoneySplash"></span><br>
-              <img src="img/funExclaim.png" class="funIcon"> a<span id="funExplorationArea"></span> of nearby <span id="funExplorationFlora"></span> has been discovered!<br><br>
+              <!--<img src="img/funExclaim.png" class="funIcon">--> [!] welcome to the hive! the time is currently <span id="funCurrentTime"></span>. <br>
+              <!--<img src="img/funDash.png" class="funIcon">   --> [-] honey production is at <span id="funCurrentHoney"></span>%! <span id="funHoneySplash"></span><br>
+              <!--<img src="img/funExclaim.png" class="funIcon">--> [!] a<span id="funExplorationArea"></span> of nearby <span id="funExplorationFlora"></span> has been discovered!<br><br>
 
-
-              <img src="img/funDash.png" class="funIcon"> <span id="funHoneySplashSeason"></span><br>
-              <img src="img/funQuery.png" class="funIcon"> <span id="funResearch"></span><br>
-              <img src="img/funDash.png" class="funIcon"> <span id="funStatus"></span><br>
+              <!--<img src="img/funDash.png"class="funIcon">   --> [-] <span id="funHoneySplashSeason"></span><br>
+              <!--<img src="img/funQuery.png" class="funIcon">  --> [?] <span id="funResearch"></span><br>
+              <!--<img src="img/funDash.png" class="funIcon">   --> [-] <span id="funStatus"></span><br>
            </div>  
 
            <div class="placeholder">

@@ -19,12 +19,11 @@
     width: 40%;
     height: 100%;
     z-index: -2; 
-    background-size: cover;      
-    background-position: center; 
-    background-repeat: no-repeat;
+    background: center / cover no-repeat;
     object-fit: cover; 
     object-position: center; 
     transition: opacity 500ms ease-in-out; /*can increase this, match buffer in js*/
+    pointer-events: none;
 }
 
 #bg-video {
@@ -48,11 +47,13 @@ html {
     background: #eee6b7;
     padding: 25px;
     margin: 5px;
+    border: 1px dashed green;
+    border-radius: 5px
 }
 
 .funIcon {
-    width: 24px;
-    height: 24px;
+    width: 16px;
+    height: 16px;
     image-rendering: pixelated;
     vertical-align: middle;
 }
@@ -60,24 +61,55 @@ html {
 
 
 .title {
-    position: relative;
+    display: flex;
+    flex-wrap: wrap;
     margin-top: 0px;
-    top: 0px;
-    width: 520px;
-    display: inline-block;
+    width: 60%;
     padding: 20px;
-    margin: 5px;
 }
 
 .title img {
     image-rendering: pixelated;
-    width: 100%
+    width: 510px;
+    height: 175px;
+}
+
+.title span {
+    font: italic normal normal 60px / 100px sans-serif;
+    align-items: flex-start;
+    margin-top: 85px;
+    margin-bottom: 0px;
+    word-break: keep-all;
+}
+@media (max-width: 1352px) {
+    .title span {
+        margin-top: 10px;
+    }
+}
+
+
+
+
+
+
+.page {
+    display: grid;
+    align-items: flex-start;
+    width: 70%;
+    margin-left: 5px;
+}
+
+nav {
+    height: 400px;
+    width: 150px;
+    grid-column: 1;
+    text-align: center;
 }
 
 .controls {
     display: inline-block;
-    vertical-align: top;
-    margin-top: 0px;
+    width: 150px;
+    grid-column: 1;
 }
 
 .controls #stopInput {
@@ -85,28 +117,13 @@ html {
     width: 100px;
 }
 
-
-
-
-.page {
-    display: flex;
-    align-items: flex-start;
-    width: 70%;
-    margin-left: 5px;
-}
-
 .container {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
     max-width: 1000px;  
-    width: 100%;       
     flex-grow: 1; 
-}
-
-nav {
-    height: 400px;
-    width: 150px;
-    flex-shrink: 0;
+    grid-column: 2;
+    grid-row: 1;
 }
 
 
