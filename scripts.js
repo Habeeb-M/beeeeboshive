@@ -17,7 +17,7 @@ function updateImage(currentImage, nextImage) {
         setTimeout( function() { //after transition make top layer into bottom
             topLayer.style.backgroundImage = nextImage;
             topLayer.style.opacity = 1;
-            //console.log(`changing ${currentImage} to ${nextImage}`)
+            console.log(`changing ${currentImage} to ${nextImage}`)
         }, buffer); 
     }
 }
@@ -29,7 +29,7 @@ function backgroundUpdate() {
     if (pauseCheckbox.checked) return; //don't run if paused
     
     let date = new Date();
-    currentIndex = date.getSeconds() % 24 + 1; //replace with hours eventually
+    currentIndex = date.getSeconds() % 24; //replace with hours eventually
 
     let nextImage = `url('img/${currentIndex}.png')`;
     updateImage(currentImage, nextImage)
@@ -103,6 +103,7 @@ function easeFunction(x) {
 
 function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from start to stop and replaces background at end
     videoLayer.currentTime = startInput;
+    stopInput += -.01; //little correction for smoothness
 
     if (stopInput < startInput) {
         stopInput += indexToTime(24)
@@ -127,7 +128,7 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
         }
 
 
-        if (videoLayer.currentTime >= stopInput || !pauseCheckbox.checked) { //when stops or paused
+        if (videoLayer.currentTime >= stopInput - 0.05 || !pauseCheckbox.checked) { //when stops or pause checkbox
             videoLayer.pause();                  
             videoLayer.currentTime = stopInput; 
             //console.log("stopped")
@@ -147,9 +148,7 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
 
 //ffmpeg -i test.mp4 -vf "drawtext=text='%{pts\:hms}':x=10:y=10:fontsize=24:fontcolor=white" -frame_pts 1 frame_%d.png
 function indexToTime(x) { //now just record a loop of 2 days. dont have to deal with wrapping it around the end of the video
-    const start = 3.8;
-    const end = 243.8;
-    return x*(end-start)/48 + start;
+    return x*(videoLayer.duration)/48;
 }
 
 

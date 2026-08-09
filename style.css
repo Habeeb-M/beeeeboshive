@@ -14,16 +14,16 @@
 /*background stuff*/
 .bg-layer {
     position: fixed;
-    top: 0;
-    right: 0;
+    top: 0px;
+    right: 0px; 
     width: 40%;
     height: 100%;
-    z-index: -2; 
+    z-index: -2;
     background: center / cover no-repeat;
     object-fit: cover; 
     object-position: center; 
     transition: opacity 500ms ease-in-out; /*can increase this, match buffer in js*/
-    pointer-events: none;
+    /*pointer-events: none;*/
 }
 
 #bg-video {
