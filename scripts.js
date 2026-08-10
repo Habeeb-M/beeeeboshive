@@ -62,6 +62,7 @@ function pauseFunction() { //pause checkbox and turn on skipping controls
     };
 }
 window.addEventListener('DOMContentLoaded', pauseFunction) //run on site load 
+document.getElementById('pauseCheckbox').addEventListener('click', pauseFunction);
 
 
 
@@ -121,10 +122,10 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
     function checkPlaying() {
 
         if (stopInput - videoLayer.currentTime <= buffer) {//just before end, update background  
-            currentImage = `url('img/${currentIndex}.png')`;
-            endImage = `url('img/${endIndex}.png')`; //update background when done
-            updateImage(currentImage, endImage)
-            currentIndex = endIndex
+            let currentImage = `url('img/${currentIndex}.png')`;
+            let endImage = `url('img/${endIndex}.png')`; //update background when done
+            updateImage(currentImage, endImage);
+            currentIndex = endIndex;
         }
 
 
@@ -139,7 +140,7 @@ function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from
         }
     }
 
-    playbackUpdateInterval = setInterval(playbackRateUpdate, dt*1000); //update playbackspeed every dt
+    let playbackUpdateInterval = setInterval(playbackRateUpdate, dt*1000); //update playbackspeed every dt
     function playbackRateUpdate(time) {
         //console.log((videoLayer.currentTime-startInput)/totalTime)
         videoLayer.playbackRate = easeFunction((videoLayer.currentTime-startInput)/totalTime)
@@ -163,8 +164,6 @@ sendButton.addEventListener('click', function() { //start animation
 
 
 // FUN STUFF
-let now = new Date();
-
 
 //home page
 function updateTime() {
@@ -180,6 +179,7 @@ setInterval(updateTime, 1000);
 
 //run this on site load, fills in funny splash text and stuff
 function honeyFun() {
+    let now = new Date();
 
     //honey production %
     const currentYear = now.getFullYear();
@@ -222,20 +222,20 @@ function honeyFun() {
 
 
     //honey splash 3 - area
-    currentDayRounded = Math.round(currentDay+0.5);
-    funExplorationArea = [" patch", " grove", " field", "n orchard", " pasture", " thicket", " meadow", " garden", " oasis"]
-    let rng1 = mulberry32(currentDayRounded)*(funExplorationArea.length-1)
+    let currentDayRounded = Math.round(currentDay+0.5);
+    let funExplorationArea = [" patch", " grove", " field", "n orchard", " pasture", " thicket", " meadow", " garden", " oasis"]
+    let rng1 = mulberry32(currentDayRounded+0.5)*(funExplorationArea.length-1)
     //console.log(mulberry32(currentDayRounded))
 
 
-    funExplorationFloraSpring = ["tulips", "forget-me-nots", "primroses", "bluebells", "almond trees", "redflower currants", "alliums", 
+    let funExplorationFloraSpring = ["tulips", "forget-me-nots", "primroses", "bluebells", "almond trees", "redflower currants", "alliums", 
         "willow trees", "plum trees",
     ]
-    funExplorationFloraSummer = ["marigolds", "lavender", "cornflowers", "borage", "heather", "wisteria", "sunflowers", "crabapple trees", "linden trees"
+    let funExplorationFloraSummer = ["marigolds", "lavender", "cornflowers", "borage", "heather", "wisteria", "sunflowers", "psycho linden trees"
     ]
-    funExplorationFloraAutumn = ["apple trees", "ivy", "goldenrods", "blue orchids", "daisies", "dahlias", "salvias", "quince trees"
+    let funExplorationFloraAutumn = ["apple trees", "ivy", "goldenrods", "blue orchids", "daisies", "dahlias", "salvias", "quince trees"
     ]
-    funExplorationFloraWinter = ["christmas cacti", "sedum", "jasmine", "snowdrops", "pansies", "mahonia", "honeysuckles",
+    let funExplorationFloraWinter = ["christmas cacti", "sedum", "jasmine", "snowdrops", "pansies", "mahonia", "honeysuckles",
     ]
 
 
@@ -270,20 +270,20 @@ function honeyFun() {
 
 
     //honey splash 5 - research
-    funResearch = ["tougher comb structures are being researched...",
+    let funResearch = ["tougher comb structures are being researched...",
         "packing algorithms are being optimised...",
         "denser honey is being developed...",
         "sweeter honey is being developed...",
         "stingers are being sharpened...",
         "stickier setae are being tested...",
         "water resistant fuzz is being tested...",
-        "a periodic tiling has been discovered...",
+        "a periodic comb tiling has been discovered...",
         "soil tests have been sent to the lab..."
     ]
     let rng3 = mulberry32(rng2)*(funResearch.length-1)
 
     //honey splash 6 - status
-    funStatus = ["hive repairs are underway...",
+    let funStatus = ["hive repairs are underway...",
         "honey leakages are being patched...",
         "queen is on break.",
         "planning permission for a hive extension has been mailed off...",
@@ -300,7 +300,9 @@ function honeyFun() {
     document.getElementById("funResearch").innerHTML = funResearch[Math.round(rng3)];
     document.getElementById("funStatus").innerHTML = funStatus[Math.round(rng4)];
 }
-honeyFun()   
+honeyFun()
+setInterval(honeyFun, 60000);
+
 
 
 
@@ -332,21 +334,30 @@ document.addEventListener('DOMContentLoaded', setupMasonry); //run on page load
 window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
 
 
-function setupBorder() { //looks pretty bad
+function setupBorder() {
     const items = document.querySelectorAll('.border');
 
     items.forEach(function(item) {
         const borderCorner = document.createElement('img');
-        borderCorner.src = 'img/bordercorner.png';
+        borderCorner.src = 'img/border2.png';
         item.appendChild(borderCorner);
 
         item.style.position = 'relative';
         borderCorner.style.position = 'absolute';
-        borderCorner.style.top = '1px';
-        borderCorner.style.left = '1px';
-        borderCorner.style.width = "10%";
+        borderCorner.style.bottom = '0px';
+        borderCorner.style.right = '0px';
+        borderCorner.style.width = "35%";
         borderCorner.style.imageRendering = "pixelated";
+        borderCorner.style.opacity = "5%";
         }
     )
 }
 setupBorder()
+
+
+
+
+
+// ARTICLES
+import { articles } from './articles.js'
+console.log(articles)

@@ -44,7 +44,7 @@ html {
 }
 
 .placeholder {
-    background: #eee6b7;
+    background: #f1e5d8;
     padding: 25px;
     margin: 5px;
     border: 1px dashed green;
@@ -75,15 +75,16 @@ html {
 }
 
 .title span {
-    font: italic normal normal 60px / 100px sans-serif;
+    font: italic normal normal 60px / 60px sans-serif;
     align-items: flex-start;
-    margin-top: 85px;
+    margin-top: 115px;
     margin-bottom: 0px;
-    word-break: keep-all;
+    white-space: nowrap;
 }
-@media (max-width: 1352px) {
+@media (max-width: 1352px) { /*move it if screen too small*/
     .title span {
-        margin-top: 10px;
+        margin: 0px;
+        margin-left: 200px;
     }
 }
 
@@ -104,6 +105,10 @@ nav {
     width: 150px;
     grid-column: 1;
     text-align: center;
+}
+
+nav a {
+    font-size: 25px;
 }
 
 .controls {
