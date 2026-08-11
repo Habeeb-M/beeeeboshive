@@ -17,7 +17,7 @@ function updateImage(currentImage, nextImage) {
         setTimeout( function() { //after transition make top layer into bottom
             topLayer.style.backgroundImage = nextImage;
             topLayer.style.opacity = 1;
-            console.log(`changing ${currentImage} to ${nextImage}`)
+            //console.log(`changing ${currentImage} to ${nextImage}`)
         }, buffer); 
     }
 }
@@ -358,6 +358,3 @@ setupBorder()
 
 
 
-// ARTICLES
-import { articles } from './articles.js'
-console.log(articles)
