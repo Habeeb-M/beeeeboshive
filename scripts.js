@@ -71,6 +71,8 @@ document.getElementById('desyncCheckbox').addEventListener('click', desyncFuncti
 
 
 //VIDEO TRANSITION
+//make sure footage does a full day seamlessly
+//ideally 20s in is sunrise in game so tick 48000 (i.e. 0) is 20s in
 function linearVideo() { //not used... just for testing
     video.currentTime = startInput.value;
     video.playbackRate = 4;
@@ -102,18 +104,26 @@ function inverseEase(x) { //this is the inverse of the INTEGRAL of ease
     return x/5
 }
 
-function indexToTime(x) { //now just record a loop of 2 days. dont have to deal with wrapping it around the end of the video
+function indexToTime(x) { //hour of real time to second of the video (index to input)
     return 5*x
 }
 
 
+//this is a big block..
+//index refers to 1-24 numbers, time refers to the timestamp of the video
+//show and play the video, and initiate liveindex (tracks current timestamp of video)
+//every 0.1s we update playbackrate according to the easefunction above
+//now add an eventlistener to run while the video plays
+//  update the background continuously with the liveindex,
+//  when it stops (window of 0.5s) then stoppingfunction, set the video last frame and the time
+//  if it is resynced mid video, stoppingfunction and reset time to synced
+//if paused at any point, stoppingfunction, set the video to recent frame and the time with liveindex
+//stoppingfunction pauses, hides, sets currentindex to liveindex, and stops the playback updates and the event listener
+
 let liveIndex = 0;
 function easedVideo(startIndex, stopIndex) { //plays smooth video from start to stop and replaces background at end
     videoLayer.currentTime = indexToTime(startIndex);
-
-    if (stopIndex < startIndex) { //wrap it around
-        stopIndex += 24
-    }
+    videoLayer.addEventListener('ended', () => { videoLayer.play(); }); //have to loop manually
 
     const startTime = indexToTime(startIndex)
     const stopTime = indexToTime(stopIndex) 
@@ -124,7 +134,18 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
     videoLayer.play();
     console.log(startIndex, "to", stopIndex, "or", startTime, "to", stopTime)
 
-    videoLayer.addEventListener('timeupdate', checkPlaying); //while playing, check if stopped 
+    let playbackUpdateInterval = setInterval(playbackRateUpdate, 100); //update playbackspeed every dt
+    function playbackRateUpdate() {
+        //console.log((videoLayer.currentTime-startTime)/totalTime)
+        videoLayer.playbackRate = easeFunction((videoLayer.currentTime-startTime)/(stopTime-startTime))
+
+        //update liveindex as video plays
+        console.log(videoLayer.currentTime)
+        liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
+        backgroundTime(inverseEase(videoLayer.currentTime))
+    }   
+
+    videoLayer.addEventListener('timeupdate', checkPlaying); //while playing run checkplaying
     function checkPlaying() {
 
         let currentImage = `url('img/${currentIndex}.png')`;
@@ -132,7 +153,7 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         updateImage(currentImage, liveImage)
 
 
-        if (videoLayer.currentTime >= stopTime - 0.5) { //when stops naturally
+        if (videoLayer.currentTime >= stopTime - 0.5 && videoLayer.currentTime < stopTime) { //when stops naturally
             stoppingFunction("stopped")
 
             videoLayer.currentTime = stopTime; 
@@ -149,23 +170,14 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         }
     }
 
-    pauseButton.addEventListener('click', () => {//if video paused
-            stoppingFunction("paused")
-            
-            backgroundTime(liveIndex);
-            backgroundUpdate(currentIndex, liveIndex);
-            return
-        })
-
-    let playbackUpdateInterval = setInterval(playbackRateUpdate, 100); //update playbackspeed every dt
-    function playbackRateUpdate() {
-        //console.log((videoLayer.currentTime-startTime)/totalTime)
-        videoLayer.playbackRate = easeFunction((videoLayer.currentTime-startTime)/(stopTime-startTime))
-
-        //update liveindex as video plays
-        liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
-        backgroundTime(inverseEase(videoLayer.currentTime))
-    }    
+    pauseButton.addEventListener('click', pauseButtonFunction) 
+    function pauseButtonFunction() {//if video paused
+        stoppingFunction("paused")
+        
+        backgroundTime(liveIndex);
+        backgroundUpdate(currentIndex, liveIndex);
+        return
+    }
 
     function stoppingFunction(log) {
         videoLayer.pause();                  
@@ -176,6 +188,7 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
 
         clearInterval(playbackUpdateInterval);
         videoLayer.removeEventListener('timeupdate', checkPlaying); 
+        pauseButton.removeEventListener('click', pauseButtonFunction)
     }
 }
 
