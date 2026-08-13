@@ -18,6 +18,7 @@
     right: 0px; 
     width: 40%;
     height: 100%;
+    min-height: 500px;
     z-index: -2;
     background: center / cover no-repeat;
     object-fit: cover; 
@@ -28,6 +29,16 @@
 
 #bg-video {
     z-index: -1;
+}
+
+#bg-text {
+    position:fixed;
+    bottom: 0px;
+    right: 0px;
+    color: white;
+    text-align: right;
+    margin: 5px;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 
@@ -118,7 +129,7 @@ nav a {
     grid-column: 1;
 }
 
-.controls #stopInput {
+.controls #stopIndex {
     display: inline-block;
     width: 100px;
 }

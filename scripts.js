@@ -2,7 +2,8 @@
 const bottomLayer = document.getElementById("bg-bottom")
 const topLayer = document.getElementById("bg-top")
 const videoLayer = document.getElementById("bg-video")
-const pauseCheckbox = document.getElementById("pauseCheckbox")
+const desyncCheckbox = document.getElementById("desyncCheckbox")
+const pauseButton = document.getElementById("pauseButton")
 const pauseControls = document.getElementsByClassName("pauseControls")
 const buffer = 500 //time before top layer becomes bottom layer i.e. how long it takes to load new image
 const updateInterval = 1000; //update every second  to check if bg needs to change.. can increase this
@@ -26,10 +27,10 @@ function updateImage(currentImage, nextImage) {
 let currentImage = "";
 let currentIndex = 0;
 function backgroundUpdate() {
-    if (pauseCheckbox.checked) return; //don't run if paused
+    if (desyncCheckbox.checked) return; //don't run if unsynced
     
     let date = new Date();
-    currentIndex = date.getSeconds() % 24; //replace with hours eventually
+    currentIndex = date.getHours(); //replace with hours eventually
 
     let nextImage = `url('img/${currentIndex}.png')`;
     updateImage(currentImage, nextImage)
@@ -40,40 +41,36 @@ let backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval); //
 
 
 
-// pause functionality
+// desync functionality
 videoLayer.style.display = "none";
 
 
-function pauseFunction() { //pause checkbox and turn on skipping controls
-    const isPaused = pauseCheckbox.checked 
+function desyncFunction() { //desync checkbox and turn on skipping controls
+    const isDesynced = desyncCheckbox.checked 
 
-    if (isPaused) {
+    if (isDesynced) {
         clearInterval(backgroundUpdateInterval) //stop backgroundupdate
         for (let elem of pauseControls) { //reveal controls
             elem.style.display = "";
         }
+        backgroundTime(currentIndex); //show simulated time
     }
     else {
         backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval);
         for (let elem of pauseControls) {
             elem.style.display = "none"; //hide controls
         }
-        backgroundUpdate() //update if unpaused
+        backgroundTime() //show synced time
     };
 }
-window.addEventListener('DOMContentLoaded', pauseFunction) //run on site load 
-document.getElementById('pauseCheckbox').addEventListener('click', pauseFunction);
+window.addEventListener('DOMContentLoaded', desyncFunction) //run on site load 
+document.getElementById('desyncCheckbox').addEventListener('click', desyncFunction);
+
 
 
 
 
 //VIDEO TRANSITION
-//const startInput = document.getElementById('startInput'); temporary start button
-const stopInput = document.getElementById('stopInput');
-const sendButton = document.getElementById('sendButton');
-
-
-
 function linearVideo() { //not used... just for testing
     video.currentTime = startInput.value;
     video.playbackRate = 4;
@@ -96,70 +93,130 @@ function linearVideo() { //not used... just for testing
 
 //just a speed function on [0,1] that starts/ends at 1 and speeds up in middle
 function easeFunction(x) {
-    return 1+10*x*(1-x)
+    //return 1+10*x*(1-x)
+    return 5
+}
+//make this better for longer videos - TODO
+
+function inverseEase(x) { //this is the inverse of the INTEGRAL of ease
+    return x/5
+}
+
+function indexToTime(x) { //now just record a loop of 2 days. dont have to deal with wrapping it around the end of the video
+    return 5*x
 }
 
 
+let liveIndex = 0;
+function easedVideo(startIndex, stopIndex) { //plays smooth video from start to stop and replaces background at end
+    videoLayer.currentTime = indexToTime(startIndex);
 
-
-function easedVideo(startInput, stopInput, endIndex) { //plays smooth video from start to stop and replaces background at end
-    videoLayer.currentTime = startInput;
-    stopInput += -.01; //little correction for smoothness
-
-    if (stopInput < startInput) {
-        stopInput += indexToTime(24)
+    if (stopIndex < startIndex) { //wrap it around
+        stopIndex += 24
     }
 
-    videoLayer.style.display = "";
-    const N = 40; //amount of updates of playback speed
-    const totalTime = stopInput - startInput;
-    const dt = totalTime/N;
+    const startTime = indexToTime(startIndex)
+    const stopTime = indexToTime(stopIndex) 
+    liveIndex = startIndex
 
+
+    videoLayer.style.display = "";
     videoLayer.play();
-    console.log(startInput, "to", stopInput)
+    console.log(startIndex, "to", stopIndex, "or", startTime, "to", stopTime)
 
     videoLayer.addEventListener('timeupdate', checkPlaying); //while playing, check if stopped 
     function checkPlaying() {
 
-        if (stopInput - videoLayer.currentTime <= buffer) {//just before end, update background  
-            let currentImage = `url('img/${currentIndex}.png')`;
-            let endImage = `url('img/${endIndex}.png')`; //update background when done
-            updateImage(currentImage, endImage);
-            currentIndex = endIndex;
+        let currentImage = `url('img/${currentIndex}.png')`;
+        let liveImage = `url('img/${liveIndex}.png')`;
+        updateImage(currentImage, liveImage)
+
+
+        if (videoLayer.currentTime >= stopTime - 0.5) { //when stops naturally
+            stoppingFunction("stopped")
+
+            videoLayer.currentTime = stopTime; 
+            backgroundTime(inverseEase(stopTime))
+            return
         }
 
+        if (!desyncCheckbox.checked) {//re-synced mid video
+            stoppingFunction("desynced")
 
-        if (videoLayer.currentTime >= stopInput - 0.05 || !pauseCheckbox.checked) { //when stops or pause checkbox
-            videoLayer.pause();                  
-            videoLayer.currentTime = stopInput; 
-            //console.log("stopped")
-            clearInterval(playbackUpdateInterval)
-            
-            videoLayer.removeEventListener('timeupdate', checkPlaying); 
-            videoLayer.style.display = "none";
+            backgroundTime();
+            backgroundUpdate();
+            return
         }
     }
 
-    let playbackUpdateInterval = setInterval(playbackRateUpdate, dt*1000); //update playbackspeed every dt
-    function playbackRateUpdate(time) {
-        //console.log((videoLayer.currentTime-startInput)/totalTime)
-        videoLayer.playbackRate = easeFunction((videoLayer.currentTime-startInput)/totalTime)
+    pauseButton.addEventListener('click', () => {//if video paused
+            stoppingFunction("paused")
+            
+            backgroundTime(liveIndex);
+            backgroundUpdate(currentIndex, liveIndex);
+            return
+        })
+
+    let playbackUpdateInterval = setInterval(playbackRateUpdate, 100); //update playbackspeed every dt
+    function playbackRateUpdate() {
+        //console.log((videoLayer.currentTime-startTime)/totalTime)
+        videoLayer.playbackRate = easeFunction((videoLayer.currentTime-startTime)/(stopTime-startTime))
+
+        //update liveindex as video plays
+        liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
+        backgroundTime(inverseEase(videoLayer.currentTime))
     }    
+
+    function stoppingFunction(log) {
+        videoLayer.pause();                  
+        console.log(log);
+        videoLayer.style.display = "none";
+        liveIndex = Math.floor(liveIndex)
+        currentIndex = liveIndex;
+
+        clearInterval(playbackUpdateInterval);
+        videoLayer.removeEventListener('timeupdate', checkPlaying); 
+    }
 }
 
-//ffmpeg -i test.mp4 -vf "drawtext=text='%{pts\:hms}':x=10:y=10:fontsize=24:fontcolor=white" -frame_pts 1 frame_%d.png
-function indexToTime(x) { //now just record a loop of 2 days. dont have to deal with wrapping it around the end of the video
-    return x*(videoLayer.duration)/48;
-}
 
 
-sendButton.addEventListener('click', function() { //start animation
-    if (currentIndex == stopInput.value) return;
+//const startInput = document.getElementById('startInput'); temporary start button
+const sendButton = document.getElementById('sendButton');
 
-    console.log(currentIndex, stopInput.value, indexToTime(currentIndex), indexToTime(stopInput.value), stopInput.value)
-    easedVideo(indexToTime(currentIndex), indexToTime(stopInput.value), stopInput.value);
-    //console.log(currentIndex, stopInput.value)
+sendButton.addEventListener('click', function() { //start animation on click
+    const stopIndex = parseFloat(document.getElementById('stopIndex').value);
+
+    if (currentIndex == stopIndex) return;
+    easedVideo(currentIndex, stopIndex);
 });
+
+
+
+
+//simulated time for bg
+function backgroundTime(arg) {
+    const backgroundText = document.getElementById("bg-text")
+
+    if (arg === undefined) {
+        backgroundText.innerHTML = `simulated time: <br> syncing to sol.3...`
+        return
+    }
+
+    //turn decimal time to 24h format
+    let hours = Math.floor(arg % 24);
+    let mins = Math.round((arg - hours) % 24 * 60);
+    //if 60
+    hours = (mins == 60) ? (hours + 1) % 24 : hours;
+    mins = (mins == 60) ? 0 : mins
+    //pad with 0s
+    hours = String(hours).padStart(2, '0');
+    mins = String(mins).padStart(2, '0');
+
+    backgroundText.innerHTML = `simulated time: <br> ${hours}:${mins}`
+}
+
+
 
 
 
