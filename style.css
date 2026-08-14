@@ -6,11 +6,11 @@
 
 @font-face {
   font-family: mainFont; 
-  src: url(img/cambria.ttc);
+  src: url(img/fonts/cambria.ttc);
 }
 @font-face {
   font-family: mcFont; 
-  src: url(img/minecraft.otf); 
+  src: url(img/fonts/minecraft.otf); 
 }
 
 
