@@ -120,17 +120,13 @@ function linearVideo() { //depreciated
 
 
 //just a speed function on [0,1] that starts/ends at 1 and speeds up in middle
-//it is a difficult question to get a nice smooth speed function such that the inverse of the displacement is also nice
 function easeFunction(x, a) {//a is like a scaling
     return Math.min(5, 1+4*a*x, 1+4*a*(1-x))
 }
 //make this better for longer videos - TODO
 
-function inverseEase(x, a) { //this is the inverse of the INTEGRAL of ease
-    //assert(a>2)
-    if (0 < x && x < 3/a) { return (Math.sqrt(1+8*a*x)-1)/(4*a) }
-    else if (3/a <= x && x < 5-7/a) { return x/5 + 2/(5*a) }
-    else { return 4*(1-1/a) + x - 2*a*(1-x)**2 }
+function inverseEase(x, a) { //this is the inverse indextotime??
+    return x/5
 }
 
 function indexToTime(x) { //hour of real time to second of the video (index to input)
@@ -162,7 +158,7 @@ function easedVideo(startIndex, stopIndex) {
     let playbackUpdateInterval = setInterval(playbackRateUpdate, 100); 
     function playbackRateUpdate() {
         //console.log(videoLayer.currentTime,easeFunction(modulo((videoLayer.currentTime-startTime)/totalTime,1),totalTime+1))
-        console.log(inverseEase(videoLayer.currentTime, totalTime+1))
+        //console.log(videoLayer.currentTime, inverseEase(videoLayer.currentTime, totalTime+1))
 
         videoLayer.playbackRate = easeFunction(modulo((videoLayer.currentTime-startTime)/totalTime,1), totalTime+1)
 
@@ -172,7 +168,7 @@ function easedVideo(startIndex, stopIndex) {
         pauseButton.disabled = false;
         weatherButton.disabled = true;
         
-        backgroundTime(inverseEase(videoLayer.currentTime, totalTime+1))
+        backgroundTime(inverseEase(videoLayer.currentTime))
 
         checkPlaying()
     }
