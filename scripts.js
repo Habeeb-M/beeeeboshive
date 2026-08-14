@@ -47,6 +47,7 @@ let backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval); //
 
 // desync functionality
 videoLayer.style.display = "none";
+pauseButton.disabled = true; //doesn't work in html??
 
 
 function desyncFunction() { //desync checkbox and turn on skipping controls
@@ -165,6 +166,8 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
             return
         }
 
+        pauseButton.disabled = false;
+
         let liveImagePlaying = `url('img/background/${liveIndex}.png')`;
         updateImage(currentImage, liveImagePlaying);
         currentIndex = liveIndex;
@@ -196,6 +199,7 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         console.log(log);
         videoLayer.style.display = "none";
         liveIndex = Math.floor(liveIndex)
+        pauseButton.disabled = true;
         
         if (desyncCheckbox.checked) {
             currentIndex = liveIndex;
@@ -218,6 +222,9 @@ sendButton.addEventListener('click', function() { //start animation on click
     if (currentIndex == stopIndex) return;
     easedVideo(currentIndex, stopIndex);
 });
+
+
+
 
 
 
