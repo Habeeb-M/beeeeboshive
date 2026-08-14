@@ -35,7 +35,6 @@ function backgroundUpdate() {
     if (desyncCheckbox.checked) return; //don't run if unsynced
     
     currentIndex = getCurrentHour() //replace with hours eventually
-    //console.log(currentIndex)
 
     let nextImage = `url('img/background/${currentIndex}.png')`;
     updateImage(currentImage, nextImage)
@@ -61,19 +60,20 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
         backgroundTime(currentIndex); //show simulated time
     }
     else {
-        videoLayer.pause()
+        videoLayer.pause();
 
         let oldIndex = currentIndex //transition from desynced to synced
-        let date = new Date();
         currentIndex = getCurrentHour();
-        updateImage(`url('img/background/${oldIndex}.png')`,`url('img/background/${currentIndex}.png')`)
+        let nextImage = `url('img/background/${currentIndex}.png')`;
+        updateImage(`url('img/background/${oldIndex}.png')`, nextImage);
+        currentImage = nextImage; // Synchronize global string state tracking
 
         backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval);
         for (let elem of pauseControls) {
             elem.style.display = "none"; //hide controls
         }
         backgroundTime() //show synced time
-    };
+    }
 }
 window.addEventListener('DOMContentLoaded', desyncFunction) //run on site load 
 document.getElementById('desyncCheckbox').addEventListener('click', desyncFunction);
@@ -159,12 +159,16 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
 
     videoLayer.addEventListener('timeupdate', checkPlaying); //while playing run checkplaying
     function checkPlaying() {
+        if (!desyncCheckbox.checked) {
+            stoppingFunction("desynced")
+            backgroundTime();
+            return
+        }
 
-        let currentImage = `url('img/background/${currentIndex}.png')`;
-        let liveImage = `url('img/background/${liveIndex}.png')`;
-        updateImage(currentImage, liveImage)
-        currentIndex = liveIndex
-        currentImage = liveImage
+        let liveImagePlaying = `url('img/background/${liveIndex}.png')`;
+        updateImage(currentImage, liveImagePlaying);
+        currentIndex = liveIndex;
+        currentImage = liveImagePlaying; 
 
 
         if (videoLayer.currentTime >= stopTime - 0.5 && videoLayer.currentTime < stopTime) { //when stops naturally
@@ -174,13 +178,6 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
             backgroundTime(inverseEase(stopTime))
             return
         }
-
-        if (!desyncCheckbox.checked) {//re-synced mid video
-            stoppingFunction("desynced")
-
-            backgroundTime();
-            return
-        }
     }
 
     pauseButton.addEventListener('click', pauseButtonFunction) 
@@ -188,9 +185,9 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         stoppingFunction("paused")
         
         backgroundTime(liveIndex);
-        let currentImage = `url('img/background/${currentIndex}.png')`
         let liveImage = `url('img/background/${liveIndex}.png')`
         updateImage(currentImage, liveImage);
+        currentImage = liveImage;
         return
     }
 
@@ -199,7 +196,10 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         console.log(log);
         videoLayer.style.display = "none";
         liveIndex = Math.floor(liveIndex)
-        currentIndex = liveIndex;
+        
+        if (desyncCheckbox.checked) {
+            currentIndex = liveIndex;
+        }
 
         clearInterval(playbackUpdateInterval);
         videoLayer.removeEventListener('timeupdate', checkPlaying); 
