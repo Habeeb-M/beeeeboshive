@@ -199,7 +199,7 @@ function backgroundTime(arg) {
     const backgroundText = document.getElementById("bg-text")
 
     if (arg === undefined) {
-        backgroundText.innerHTML = `simulated time: <br> syncing to sol.3...`
+        backgroundText.innerHTML = `simulated time: <br> syncing to sol-3...`
         return
     }
 
