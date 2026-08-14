@@ -8,6 +8,11 @@ const pauseControls = document.getElementsByClassName("pauseControls")
 const buffer = 500 //time before top layer becomes bottom layer i.e. how long it takes to load new image
 const updateInterval = 1000; //update every second  to check if bg needs to change.. can increase this
 
+function getCurrentHour() {
+    let date = new Date();
+    return date.getHours();
+}
+
 
 //change currentimage to nextimage, input two images
 function updateImage(currentImage, nextImage) {
@@ -18,7 +23,7 @@ function updateImage(currentImage, nextImage) {
         setTimeout( function() { //after transition make top layer into bottom
             topLayer.style.backgroundImage = nextImage;
             topLayer.style.opacity = 1;
-            //console.log(`changing ${currentImage} to ${nextImage}`)
+            console.log(`changing ${currentImage} to ${nextImage}`)
         }, buffer); 
     }
 }
@@ -29,10 +34,10 @@ let currentIndex = 0;
 function backgroundUpdate() {
     if (desyncCheckbox.checked) return; //don't run if unsynced
     
-    let date = new Date();
-    currentIndex = date.getHours(); //replace with hours eventually
+    currentIndex = getCurrentHour() //replace with hours eventually
+    //console.log(currentIndex)
 
-    let nextImage = `url('img/${currentIndex}.png')`;
+    let nextImage = `url('img/background/${currentIndex}.png')`;
     updateImage(currentImage, nextImage)
     currentImage = nextImage //update currentimage
 }
@@ -56,6 +61,13 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
         backgroundTime(currentIndex); //show simulated time
     }
     else {
+        videoLayer.pause()
+
+        let oldIndex = currentIndex //transition from desynced to synced
+        let date = new Date();
+        currentIndex = getCurrentHour();
+        updateImage(`url('img/background/${oldIndex}.png')`,`url('img/background/${currentIndex}.png')`)
+
         backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval);
         for (let elem of pauseControls) {
             elem.style.display = "none"; //hide controls
@@ -73,7 +85,7 @@ document.getElementById('desyncCheckbox').addEventListener('click', desyncFuncti
 //VIDEO TRANSITION
 //make sure footage does a full day seamlessly
 //ideally 20s in is sunrise in game so tick 48000 (i.e. 0) is 20s in
-function linearVideo() { //not used... just for testing
+function linearVideo() { //depreciated
     video.currentTime = startInput.value;
     video.playbackRate = 4;
     
@@ -140,7 +152,7 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         videoLayer.playbackRate = easeFunction((videoLayer.currentTime-startTime)/(stopTime-startTime))
 
         //update liveindex as video plays
-        console.log(videoLayer.currentTime)
+        //console.log(videoLayer.currentTime)
         liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
         backgroundTime(inverseEase(videoLayer.currentTime))
     }   
@@ -148,9 +160,11 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
     videoLayer.addEventListener('timeupdate', checkPlaying); //while playing run checkplaying
     function checkPlaying() {
 
-        let currentImage = `url('img/${currentIndex}.png')`;
-        let liveImage = `url('img/${liveIndex}.png')`;
+        let currentImage = `url('img/background/${currentIndex}.png')`;
+        let liveImage = `url('img/background/${liveIndex}.png')`;
         updateImage(currentImage, liveImage)
+        currentIndex = liveIndex
+        currentImage = liveImage
 
 
         if (videoLayer.currentTime >= stopTime - 0.5 && videoLayer.currentTime < stopTime) { //when stops naturally
@@ -165,7 +179,6 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
             stoppingFunction("desynced")
 
             backgroundTime();
-            backgroundUpdate();
             return
         }
     }
@@ -175,7 +188,9 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         stoppingFunction("paused")
         
         backgroundTime(liveIndex);
-        backgroundUpdate(currentIndex, liveIndex);
+        let currentImage = `url('img/background/${currentIndex}.png')`
+        let liveImage = `url('img/background/${liveIndex}.png')`
+        updateImage(currentImage, liveImage);
         return
     }
 
