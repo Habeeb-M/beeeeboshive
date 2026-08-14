@@ -4,6 +4,8 @@ const topLayer = document.getElementById("bg-top")
 const videoLayer = document.getElementById("bg-video")
 const desyncCheckbox = document.getElementById("desyncCheckbox")
 const pauseButton = document.getElementById("pauseButton")
+const weatherButton = document.getElementById("weatherButton")
+const weatherSyncButton = document.getElementById("weatherSyncButton")
 const pauseControls = document.getElementsByClassName("pauseControls")
 const buffer = 500 //time before top layer becomes bottom layer i.e. how long it takes to load new image
 const updateInterval = 1000; //update every second  to check if bg needs to change.. can increase this
@@ -36,20 +38,22 @@ function backgroundUpdate() {
     
     currentIndex = getCurrentHour() //replace with hours eventually
 
-    let nextImage = `url('img/background/${currentIndex}.png')`;
+    let nextImage = getBackgroundURL(currentIndex)
     updateImage(currentImage, nextImage)
     currentImage = nextImage //update currentimage
 }
 let backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval); //and run this every updateinterval
 
 
+function getBackgroundURL(index) {
+    return (currentWeather) ? `url('img/background/r${index}.png')` : `url('img/background/${index}.png')`
+}
 
+
+//VIDEO TRANSITION
+videoLayer.style.display = "none";
 
 // desync functionality
-videoLayer.style.display = "none";
-pauseButton.disabled = true; //doesn't work in html??
-
-
 function desyncFunction() { //desync checkbox and turn on skipping controls
     const isDesynced = desyncCheckbox.checked 
 
@@ -59,14 +63,18 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
             elem.style.display = "";
         }
         backgroundTime(currentIndex); //show simulated time
+
+        //weather button
+        weatherButton.addEventListener('click', weatherButtonFunction);
+
     }
     else {
         videoLayer.pause();
 
         let oldIndex = currentIndex //transition from desynced to synced
         currentIndex = getCurrentHour();
-        let nextImage = `url('img/background/${currentIndex}.png')`;
-        updateImage(`url('img/background/${oldIndex}.png')`, nextImage);
+        let nextImage = getBackgroundURL(currentIndex);
+        updateImage(getBackgroundURL(oldIndex), nextImage);
         currentImage = nextImage; // Synchronize global string state tracking
 
         backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval);
@@ -74,6 +82,9 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
             elem.style.display = "none"; //hide controls
         }
         backgroundTime() //show synced time
+
+        //weather button
+        weatherButton.removeEventListener('click', weatherButtonFunction);
     }
 }
 window.addEventListener('DOMContentLoaded', desyncFunction) //run on site load 
@@ -83,7 +94,6 @@ document.getElementById('desyncCheckbox').addEventListener('click', desyncFuncti
 
 
 
-//VIDEO TRANSITION
 //make sure footage does a full day seamlessly
 //ideally 20s in is sunrise in game so tick 48000 (i.e. 0) is 20s in
 function linearVideo() { //depreciated
@@ -135,6 +145,7 @@ function indexToTime(x) { //hour of real time to second of the video (index to i
 
 let liveIndex = 0;
 function easedVideo(startIndex, stopIndex) { //plays smooth video from start to stop and replaces background at end
+    videoLayer.src = (currentWeather) ? 'img/background/rbg-video.mp4' : 'img/background/bg-video.mp4'
     videoLayer.currentTime = indexToTime(startIndex);
     videoLayer.addEventListener('ended', () => { videoLayer.play(); }); //have to loop manually
 
@@ -167,8 +178,9 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         }
 
         pauseButton.disabled = false;
+        weatherButton.disabled = true;
 
-        let liveImagePlaying = `url('img/background/${liveIndex}.png')`;
+        let liveImagePlaying = getBackgroundURL(liveIndex)
         updateImage(currentImage, liveImagePlaying);
         currentIndex = liveIndex;
         currentImage = liveImagePlaying; 
@@ -188,7 +200,7 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         stoppingFunction("paused")
         
         backgroundTime(liveIndex);
-        let liveImage = `url('img/background/${liveIndex}.png')`
+        let liveImage = getBackgroundURL(liveIndex)
         updateImage(currentImage, liveImage);
         currentImage = liveImage;
         return
@@ -200,6 +212,7 @@ function easedVideo(startIndex, stopIndex) { //plays smooth video from start to 
         videoLayer.style.display = "none";
         liveIndex = Math.floor(liveIndex)
         pauseButton.disabled = true;
+        weatherButton.disabled = false;
         
         if (desyncCheckbox.checked) {
             currentIndex = liveIndex;
@@ -223,6 +236,39 @@ sendButton.addEventListener('click', function() { //start animation on click
     easedVideo(currentIndex, stopIndex);
 });
 
+
+
+//weather stuff
+//say 0 is clear and 1 is rain; initialise
+let currentWeather = 0;
+
+function weatherButtonFunction() {
+    if (!currentWeather) {updateImage(currentImage, currentImage.slice(0,20) + "r" + currentImage.slice(20,100))}
+    else {updateImage(currentImage.slice(0,20) + "r" + currentImage.slice(20,100), currentImage)}
+    currentWeather = !currentWeather
+    weatherButton.innerHTML = (currentWeather) ? "clear" : "rain";
+    console.log(currentWeather, currentImage)
+}
+
+weatherSyncButton.addEventListener('click', getWeatherByLocation)
+
+const openWeather = '2bff7b6c31dc3ae8697e2a77af6f3d76'; //don't steal this it's literally free to get one
+function getWeatherByLocation() {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            const { latitude: lat, longitude: lon } = pos.coords;
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeather}`);
+            const data = await res.json();
+            
+            // Short-circuit evaluation: sets 1 if raining, 0 otherwise
+            currentWeather = (data.weather?.[0]?.main === 'Rain' || data.rain) ? 1 : 0;
+            
+            console.log(`Current Weather Flag: ${currentWeather}`);
+        } catch (err) {
+            console.error("Failed to check weather:", err);
+        }
+    });
+}
 
 
 
