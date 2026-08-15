@@ -190,7 +190,7 @@ function easedVideo(startIndex, stopIndex) {
             backgroundTime(inverseEase(stopTime))        
             updateIndexAndImage();
             console.log("updated")
-            setTimeout(stoppingFunction("stopped"), 1000)
+            setTimeout(() => {stoppingFunction("stopped")}, 200)
             return
         }
     }
