@@ -154,7 +154,11 @@ function easedVideo(startIndex, stopIndex) {
     videoLayer.style.display = "";
     videoLayer.play();
 
-    //runs every 100ms, updates playbackrate, currentimage, buttons, background time, the checkplaying - stops when video does
+    //buttons
+    pauseButton.disabled = false;
+    weatherButton.disabled = true;
+
+    //runs every 100ms, updates playbackrate, currentimage, background time, the checkplaying - stops when video does
     let playbackUpdateInterval = setInterval(playbackRateUpdate, 100); 
     function playbackRateUpdate() {
         //console.log(videoLayer.currentTime,easeFunction(modulo((videoLayer.currentTime-startTime)/totalTime,1),totalTime+1))
@@ -164,9 +168,6 @@ function easedVideo(startIndex, stopIndex) {
 
         liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
         updateIndexAndImage();
-
-        pauseButton.disabled = false;
-        weatherButton.disabled = true;
         
         backgroundTime(inverseEase(videoLayer.currentTime))
 
@@ -186,11 +187,10 @@ function easedVideo(startIndex, stopIndex) {
             //cant be just > stoptime as we allow loops to happen. update time to recent liveindex time
             //also as it stops just before need to update manually
             liveIndex += 1
-            videoLayer.currentTime = stopTime; 
-            videoLayer.pause();
             backgroundTime(inverseEase(stopTime))        
             updateIndexAndImage();
-            stoppingFunction("stopped")
+            console.log("updated")
+            setTimeout(stoppingFunction("stopped"), 1000)
             return
         }
     }
@@ -224,8 +224,8 @@ function easedVideo(startIndex, stopIndex) {
         clearInterval(playbackUpdateInterval)
 
         //add buttons
-        pauseButton.disabled = false;
-        weatherButton.disabled = true;
+        pauseButton.disabled = true;
+        weatherButton.disabled = false;
     }
 }   
 
