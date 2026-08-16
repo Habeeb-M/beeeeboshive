@@ -41,7 +41,8 @@
     background: center / cover no-repeat;
     object-fit: cover; 
     object-position: center; 
-    transition: opacity 250ms ease-in-out; /*can increase this, match buffer in js*/
+    transition: opacity ease-in-out; /*can increase this, match buffer in js*/
+    transition-duration: 250ms;
     /*pointer-events: none;*/
 }
 

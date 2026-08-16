@@ -7,7 +7,7 @@ const pauseButton = document.getElementById("pauseButton")
 const weatherButton = document.getElementById("weatherButton")
 const weatherSyncButton = document.getElementById("weatherSyncButton")
 const pauseControls = document.getElementsByClassName("pauseControls")
-const buffer = 500 //time before top layer becomes bottom layer i.e. how long it takes to load new image
+var transitionSpeed = 500 //transition of bg layer
 const updateInterval = 1000; //update every second  to check if bg needs to change.. can increase this
 
 function getCurrentHour() {
@@ -28,7 +28,7 @@ function updateImage(currentImage, nextImage) {
         setTimeout( function() { //after transition make top layer into bottom
             topLayer.style.backgroundImage = nextImage;
             topLayer.style.opacity = 1;
-        }, buffer); 
+        }, transitionSpeed); 
     }
 }
 
@@ -138,8 +138,27 @@ function indexToTime(x) { //hour of real time to second of the video (index to i
 //actual video transition
 let liveIndex = undefined;
 let liveImage = "";
+let doLoop = false;
 
 function easedVideo(startIndex, stopIndex) {
+    //background transition speed - set to 0 while playing
+    transitionSpeed = 0
+    for (let elem of document.getElementsByClassName('bg-layer')) {
+        elem.style.transitionDelay = `${transitionSpeed}ms`
+    }
+
+    //loop flag and stuff
+    if (stopIndex < startIndex) { 
+        doLoop = true
+        videoLayer.addEventListener('ended', loopFunction);
+        function loopFunction() {
+            videoLayer.play();
+            doLoop = false;
+            videoLayer.removeEventListener('ended', loopFunction)
+        }
+    }
+    
+
     //index is 0-23, time is the time of the video
     const startTime = indexToTime(startIndex)
     const stopTime = indexToTime(stopIndex) 
@@ -150,13 +169,14 @@ function easedVideo(startIndex, stopIndex) {
     videoLayer.currentTime = indexToTime(startIndex);
     videoLayer.addEventListener('ended', () => videoLayer.play()); //have to loop manually
 
+    //buttons
+    pauseButton.disabled = false;
+    weatherButton.disabled = true;
+
     //unhide and play video
     videoLayer.style.display = "";
     videoLayer.play();
 
-    //buttons
-    pauseButton.disabled = false;
-    weatherButton.disabled = true;
 
     //runs every 100ms, updates playbackrate, currentimage, background time, the checkplaying - stops when video does
     let playbackUpdateInterval = setInterval(playbackRateUpdate, 100); 
@@ -166,15 +186,18 @@ function easedVideo(startIndex, stopIndex) {
 
         videoLayer.playbackRate = easeFunction(modulo((videoLayer.currentTime-startTime)/totalTime,1), totalTime+1)
 
-        liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
-        updateIndexAndImage();
+        if (doLoop == true || (stopTime - videoLayer.currentTime > 0.2 && doLoop == false)) {//near end
+            liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
+            updateIndexAndImage();
         
-        backgroundTime(inverseEase(videoLayer.currentTime))
+            backgroundTime(inverseEase(videoLayer.currentTime))
+        }
 
         checkPlaying()
     }
 
     //checks if video is supposed to end, or is resynced
+    //deal with loops with a flag and desync properly TODO
     function checkPlaying() {
         if (!desyncCheckbox.checked) {//if resynced, reset time
             stoppingFunction("resynced")
@@ -183,14 +206,14 @@ function easedVideo(startIndex, stopIndex) {
             return
         }
 
-        if (videoLayer.currentTime >= stopTime - 1 && videoLayer.currentTime < stopTime) { //when stops naturally
-            //cant be just > stoptime as we allow loops to happen. update time to recent liveindex time
+        if (stopTime - videoLayer.currentTime <= 0.2 && doLoop == false) { //when stops naturally
+            //update time to recent liveindex time and image instantly
             //also as it stops just before need to update manually
-            liveIndex += 1
+            liveIndex = stopIndex;
             backgroundTime(inverseEase(stopTime))        
             updateIndexAndImage();
             console.log("updated")
-            setTimeout(() => {stoppingFunction("stopped")}, 200)
+            setTimeout(() => stoppingFunction("stopped"), 20)
             return
         }
     }
@@ -219,6 +242,13 @@ function easedVideo(startIndex, stopIndex) {
         videoLayer.pause();                  
         console.log(log);
         videoLayer.style.display = "none";
+
+        //reset transition speed
+        transitionSpeed = 0
+        for (let elem of document.getElementsByClassName('bg-layer')) {
+            elem.style.transitionDelay = `${transitionSpeed}ms`
+        }
+        transitionSpeed = 500;
 
         //remove listeners
         clearInterval(playbackUpdateInterval)
