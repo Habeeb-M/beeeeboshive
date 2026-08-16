@@ -15,12 +15,12 @@
 }
 @font-face {
   font-family: mainFont;
-  src: url(img/fonts/Millennium-Italic_0);
-  font-weight: italic;
+  src: url(img/fonts/Millennium-Italic_0.ttf);
+  font-style: italic;
 }
 @font-face {
     font-family: titleFont;
-    src: url(img/fonts/HeinzHeinrich-Regular.otf)
+    src: url(img/fonts/Millennium-Regular_0.ttf)
 }
 @font-face {
   font-family: mcFont; 
@@ -106,17 +106,16 @@ html {
     height: 175px;
 }
 
-.title span {
-    font-family: titleFont;
-    font: italic normal normal 60px / 60px sans-serif;
+#titletext {
+    font: italic normal normal 60px / 60px titleFont;
     align-items: flex-start;
     margin-top: 115px;
     margin-bottom: 0px;
     white-space: nowrap;
 }
 @media (max-width: 1352px) { /*move it if screen too small*/
-    .title span {
-        margin: 0px;
+    #titletext {
+        margin-top: 0px;
         margin-left: 200px;
     }
 }

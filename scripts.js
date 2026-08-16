@@ -18,6 +18,22 @@ function getCurrentHour() {
 function modulo(a,b) { return ((a % b) + b) % b }
 
 
+//blinky title
+const title = document.getElementById("titletext")
+const titleLength = title.innerHTML.length
+var ellipsisNumber = 0;
+function blinkyEllipsis() {
+    title.innerHTML = title.innerHTML.slice(0, titleLength) + ".".repeat(ellipsisNumber)
+    ellipsisNumber = (ellipsisNumber + 1) % 4
+}
+setInterval(blinkyEllipsis, 500)
+
+
+
+//////////////////////
+// BACKGROUND STUFF //
+//////////////////////
+
 //change currentimage to nextimage
 function updateImage(currentImage, nextImage) {
     if (nextImage != currentImage) {
@@ -282,10 +298,10 @@ let currentWeather = 0;
 
 function weatherButtonFunction() {
     if (!currentWeather) {updateImage(currentImage, currentImage.slice(0,20) + "r" + currentImage.slice(20,100))}
-    else {updateImage(currentImage.slice(0,20) + "r" + currentImage.slice(20,100), currentImage)}
+    else {updateImage(currentImage, currentImage.slice(0,20) + currentImage.slice(21,100))}
     currentWeather = !currentWeather
     weatherButton.innerHTML = (currentWeather) ? "clear" : "rain";
-    console.log(currentWeather, currentImage)
+    console.log(currentWeather)
 }
 
 weatherSyncButton.addEventListener('click', getWeatherByLocation)
@@ -307,8 +323,6 @@ function getWeatherByLocation() {
         }
     });
 }
-
-
 
 
 
@@ -337,6 +351,9 @@ function backgroundTime(arg) {
 
 
 
+/////////////////
+// POSITIONING //
+/////////////////
 
 
 //position (can also put as bookmarklet)
