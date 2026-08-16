@@ -357,45 +357,59 @@ function backgroundTime(arg) {
 
 
 //position (can also put as bookmarklet)
-//javascript:( function () { 
-//    var box = document.getElementById('coord-tracker');
-//    if (!box) { 
-//        box=document.createElement('div');
-//        box.id='coord-tracker';
-//        box.style.position='fixed';
-//        box.style.background='rgba(0,0,0,0.8)';
-//        box.style.color='#fff';
-//        box.style.fontSize='12px';
-//        box.style.zIndex='999999';
-//        document.body.appendChild(box);
-//    }
-//    document.onmousemove = function(e) { 
-//        box.style.left = (e.clientX+15) + 'px';
-//        box.style.top = (e.clientY+15) + 'px';
-//        box.innerHTML= 'X: '+e.pageX+' | Y: '+e.pageY;
-//    };
-//})();
+javascript:( function () { 
+    var box = document.getElementById('coord-tracker');
+    if (!box) { 
+        box=document.createElement('div');
+        box.id='coord-tracker';
+        box.style.position='fixed';
+        box.style.background='rgba(0,0,0,0.8)';
+        box.style.color='#fff';
+        box.style.fontSize='12px';
+        box.style.zIndex='999999';
+        document.body.appendChild(box);
+    }
+    document.onmousemove = function(e) { 
+        box.style.left = (e.clientX+15) + 'px';
+        box.style.top = (e.clientY+15) + 'px';
+        box.innerHTML= 'X: '+e.pageX+' | Y: '+e.pageY;
+    };
+})();
 
 
 
-//sets up the masonry front page
+//sets up the masonry front page. post everything from frontPage.js
+import { frontContent } from './frontPage.js'
+const articleContainer = document.getElementsByClassName("container")[0]
+frontContent.forEach(post => {
+        const articleFull = document.createElement("div");
+        articleFull.innerHTML = `${post.content}`
+        articleFull.className = "placeholder"
+        articleContainer.append(articleFull)
+    })
+
+
 export function setupMasonry() {
-    if (window.innerWidth < 1150) return
+    if (window.innerWidth < 1150) {} //return
+
     const container = document.querySelector('.container');
     const items = container.querySelectorAll('.container div');
 
-    items.forEach(function(item) {
-        const itemRectangle = item.getBoundingClientRect();
-        const itemHeight = item.getBoundingClientRect().height;
-        const rowSpan = Math.ceil(itemHeight);
-        item.style.gridRowEnd = `span ${rowSpan}`;
+
+    var lefts = new Set();
+    var tops = new Set();
+    items.forEach(function(item) { //get all lefts and tops
+        lefts.add(item.offsetLeft)
+        tops.add(item.offsetTop)
     });
+    lefts = new Array(lefts)
+    tops = new Array(tops)
 
-    container.classList.add('masonry-ready');
-  }
+    console.log(lefts,tops)
+}
 
-document.addEventListener('DOMContentLoaded', setupMasonry); //run on page load
-window.addEventListener('resize', () => { setInterval(setupMasonry(), 100) }); //recalculates masonry if window size changes
+window.addEventListener('load', setupMasonry); //run on page load
+window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
 
 
 //function setupBorder() { //not used rn
