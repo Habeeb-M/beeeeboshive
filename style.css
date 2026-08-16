@@ -41,7 +41,7 @@
     background: center / cover no-repeat;
     object-fit: cover; 
     object-position: center; 
-    transition: opacity 500ms ease-in-out; /*can increase this, match buffer in js*/
+    transition: opacity 250ms ease-in-out; /*can increase this, match buffer in js*/
     /*pointer-events: none;*/
 }
 
@@ -167,6 +167,7 @@ nav a {
 .container div {
     align-self: start; 
     box-sizing: border-box;
+    min-width: 200px
 }
 
 .double-width { grid-column: span 2; }

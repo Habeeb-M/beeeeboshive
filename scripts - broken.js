@@ -8,7 +8,7 @@ const weatherButton = document.getElementById("weatherButton")
 const weatherSyncButton = document.getElementById("weatherSyncButton")
 const pauseControls = document.getElementsByClassName("pauseControls")
 const buffer = 500 //time before top layer becomes bottom layer i.e. how long it takes to load new image
-const updateInterval = 1000; //update every second  to check if bg needs to change.. can increase this
+const updateInterval = 6000; //update every second  to check if bg needs to change.. can increase this
 
 function getCurrentHour() {
     let date = new Date();
@@ -72,21 +72,17 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
 
     }
     else {
-        videoLayer.pause();
-
         let oldIndex = currentIndex //transition from desynced to synced
         currentIndex = getCurrentHour();
         let nextImage = getBackgroundURL(currentIndex);
         updateImage(getBackgroundURL(oldIndex), nextImage);
-        currentImage = nextImage; // Synchronize global string state tracking
+        currentImage = nextImage; 
 
         backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval);
-        for (let elem of pauseControls) {
-            elem.style.display = "none"; //hide controls
-        }
         backgroundTime() //show synced time
 
-        //weather button
+        //hide buttons remove listener
+        for (let elem of pauseControls) { elem.style.display = "none"; }
         weatherButton.removeEventListener('click', weatherButtonFunction);
     }
 }
@@ -138,16 +134,20 @@ function indexToTime(x) { //hour of real time to second of the video (index to i
 //actual video transition
 let liveIndex = undefined;
 let liveImage = "";
+let playbackUpdateInterval = null
 
 function easedVideo(startIndex, stopIndex) {
     //index is 0-23, time is the time of the video
     const startTime = indexToTime(startIndex)
     const stopTime = indexToTime(stopIndex) 
+    const stopImage = getBackgroundURL(stopIndex)
     const totalTime = modulo(stopTime-startTime, 120);
 
     //set video, start time
     videoLayer.src = (currentWeather) ? 'img/background/rbg-video.mp4' : 'img/background/bg-video.mp4'
     videoLayer.currentTime = indexToTime(startIndex);
+
+    //deal with loop soon... TODO
     videoLayer.addEventListener('ended', () => videoLayer.play()); //have to loop manually
 
     //unhide and play video
@@ -159,38 +159,40 @@ function easedVideo(startIndex, stopIndex) {
     weatherButton.disabled = true;
 
     //runs every 100ms, updates playbackrate, currentimage, background time, the checkplaying - stops when video does
-    let playbackUpdateInterval = setInterval(playbackRateUpdate, 100); 
+    playbackUpdateInterval = setInterval(playbackRateUpdate, 100); 
     function playbackRateUpdate() {
-        //console.log(videoLayer.currentTime,easeFunction(modulo((videoLayer.currentTime-startTime)/totalTime,1),totalTime+1))
-        //console.log(videoLayer.currentTime, inverseEase(videoLayer.currentTime, totalTime+1))
+        console.log()
 
         videoLayer.playbackRate = easeFunction(modulo((videoLayer.currentTime-startTime)/totalTime,1), totalTime+1)
 
-        liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
-        updateIndexAndImage();
-        
-        backgroundTime(inverseEase(videoLayer.currentTime))
+        if (liveIndex != stopImage - 1 ) {//if mid video
+            liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
+            updateIndexAndImage();
+            backgroundTime(inverseEase(videoLayer.currentTime))
+        }
 
         checkPlaying()
     }
 
     //checks if video is supposed to end, or is resynced
     function checkPlaying() {
-        if (!desyncCheckbox.checked) {//if resynced, reset time
+        if (!desyncCheckbox.checked) {//if resynced, reset time DEAL WITH LATER TODO
             stoppingFunction("resynced")
             backgroundTime();
             backgroundUpdate()
             return
         }
 
-        if (videoLayer.currentTime >= stopTime - 1 && videoLayer.currentTime < stopTime) { //when stops naturally
-            //cant be just > stoptime as we allow loops to happen. update time to recent liveindex time
-            //also as it stops just before need to update manually
-            liveIndex += 1
-            backgroundTime(inverseEase(stopTime))        
-            updateIndexAndImage();
-            console.log("updated")
-            setTimeout(() => {stoppingFunction("stopped")}, 200)
+        //READD LOOP WITH A LOOP FLAG later
+        if (liveIndex == stopIndex - 1 ) {//if naturally stopping
+            setInterval(() => {
+                console.log("hello")
+                updateImage(currentImage, stopImage)
+                currentIndex = stopIndex
+                backgroundTime(stopIndex);
+                stoppingFunction("stopped")
+            }, 1000);
+            clearInterval(playbackUpdateInterval)
             return
         }
     }
@@ -222,6 +224,8 @@ function easedVideo(startIndex, stopIndex) {
 
         //remove listeners
         clearInterval(playbackUpdateInterval)
+        pauseButton.removeEventListener('click', pauseButtonFunction)
+
 
         //add buttons
         pauseButton.disabled = true;
