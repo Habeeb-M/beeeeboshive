@@ -14,8 +14,8 @@ frontContent.forEach(post => {
         articleContainer.append(articleFull);
     });
 setupMasonry();
-window.addEventListener('load', () => setupMasonry('.container'));
-window.addEventListener('resize', () => setupMasonry('.container'));
+window.addEventListener('load', setupMasonry);
+window.addEventListener('resize', setupMasonry);
 
 
 
@@ -168,5 +168,8 @@ function updateTime() {
             document.getElementById("funCurrentTime").innerHTML = now.toLocaleTimeString([], options);
         }
         
-updateTime(); //run on page load and update every second - could optimise to every minute
-setInterval(updateTime, 1000);
+window.addEventListener('load', () => {
+    document.getElementById('funTime').style.display = "none";
+    updateTime()
+    setInterval(updateTime, 1000);
+});

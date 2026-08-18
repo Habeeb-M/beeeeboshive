@@ -6,25 +6,25 @@
 
 @font-face {
   font-family: mainFont; 
-  src: url(img/fonts/Millennium-Regular_0.ttf);
+  src: url(./img/fonts/Millennium-Regular_0.ttf);
 }
 @font-face {
   font-family: mainFont;
-  src: url(img/fonts/Millennium-Bold.ttf);
+  src: url(./img/fonts/Millennium-Bold.ttf);
   font-weight: bold;
 }
 @font-face {
   font-family: mainFont;
-  src: url(img/fonts/Millennium-Italic_0.ttf);
+  src: url(./img/fonts/Millennium-Italic_0.ttf);
   font-style: italic;
 }
 @font-face {
     font-family: titleFont;
-    src: url(img/fonts/Millennium-Regular_0.ttf)
+    src: url(./img/fonts/Millennium-Regular_0.ttf)
 }
 @font-face {
   font-family: mcFont; 
-  src: url(img/fonts/minecraft.otf); 
+  src: url(./img/fonts/minecraft.otf); 
 }
 
 
@@ -119,7 +119,7 @@ html {
         margin-left: 200px;
     }
 }
-.ellipsis {
+.hidden {
     visibility: hidden;
 }
 .shown {

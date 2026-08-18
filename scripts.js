@@ -21,7 +21,7 @@ function modulo(a,b) { return ((a % b) + b) % b }
 //blinky title
 const title = document.getElementById("titletext")
 const titleLength = title.innerHTML.length-(93+6*ellipsisNumber)
-const ellipsis = document.getElementsByClassName("ellipsis")
+const ellipsis = document.getElementsByClassName("hidden")
 var ellipsisNumber = 0;
 
 function blinkyEllipsis() {
@@ -435,7 +435,7 @@ export function setupMasonry() {
         }
 
 
-        console.log(masonBottoms)
+        //console.log(masonBottoms)
     }
 
 }

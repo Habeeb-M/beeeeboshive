@@ -3,7 +3,7 @@ export const frontContent = [
         'id': 1,
         'width': '2',
         'date': null,
-        'content': `[!] welcome to the hive! the time is currently <span id="funCurrentTime"></span>. <br>
+        'content': `[!] welcome to the hive! the time is currently <span id="funTime">xx:xx</span><span id="funCurrentTime"></span>. <br>
                     [-] honey production is at <span id="funCurrentHoney"></span>%! <span id="funHoneySplash"></span><br>
                     [!] a<span id="funExplorationArea"></span> of nearby <span id="funExplorationFlora"></span> has been discovered!<br><br>
                     [-] <span id="funHoneySplashSeason"></span><br>

@@ -13,5 +13,5 @@ articles.forEach(post => {
     })
 
 setupMasonry()
-window.addEventListener('load', () => setupMasonry('.container'));
+window.addEventListener('load', setupMasonry);
 window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
