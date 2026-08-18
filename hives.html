@@ -14,16 +14,14 @@
     <div id="bg-bottom" class="bg-layer"></div>
     <div id="bg-top" class="bg-layer"></div>
     
-      
-
-    <video id="bg-video" muted loop class="bg-layer" src="img/background/bg-video.mp4"></video>
+    <video id="bg-video" muted class="bg-layer"></video>
     <span id="bg-text"></span>
     
 
     <!--title stuff-->
     <div class="title">
         <img src="img/logo.png">
-        <span>the hives..</span> 
+        <span id="titletext">the apiary<span class="ellipsis">.</span><span class="ellipsis">.</span><span class="ellipsis">.</span></span>
     </div>
 
 
@@ -32,7 +30,7 @@
       <div class="sidebar">
         <nav class="placeholder nav">
           <a href="./index.html">apiary</a><br>
-          <a href="./hives.html">hives</a><br>
+          <a>[hives]</a><br>
           <a href="">testuble</a><br>
         </nav>
       
@@ -50,15 +48,13 @@
           <label for="stopIndex" class="pauseControls" width="100px">progress to:</label>
           <input id="stopIndex" type="number" value="18" max="24" class="pauseControls">
           <button id="sendButton" class="pauseControls">send!</button>
-          <button id="pauseButton" class="pauseControls">pause</button>
-          <button id="weatherClear" class="pauseControls">clear</button>
-          <button id="weatherRain" class="pauseControls">rain</button>
+          <button id="pauseButton" class="pauseControls" disabled>pause</button>
+          <button id="weatherButton" class="pauseControls">rain</button>
+          <button id="weatherSyncButton" class="pauseControls">sync to weather (needs location)</button>
         </div>
       </div>
 
-      <div class="container">
-        
-      </div>
+      <div class="container"></div>  
     </div>
 
       

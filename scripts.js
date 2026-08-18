@@ -20,13 +20,24 @@ function modulo(a,b) { return ((a % b) + b) % b }
 
 //blinky title
 const title = document.getElementById("titletext")
-const titleLength = title.innerHTML.length
+const titleLength = title.innerHTML.length-(93+6*ellipsisNumber)
+const ellipsis = document.getElementsByClassName("ellipsis")
 var ellipsisNumber = 0;
+
 function blinkyEllipsis() {
-    title.innerHTML = title.innerHTML.slice(0, titleLength) + ".".repeat(ellipsisNumber)
+    //console.log(ellipsisNumber)
+
+    if (ellipsisNumber==3) {
+        for (let dot of ellipsis) {dot.classList.remove("shown")}
+    }
+    else {
+        ellipsis[ellipsisNumber].classList.add("shown")
+    }
+
     ellipsisNumber = (ellipsisNumber + 1) % 4
 }
 setInterval(blinkyEllipsis, 500)
+
 
 
 
@@ -357,55 +368,76 @@ function backgroundTime(arg) {
 
 
 //position (can also put as bookmarklet)
-javascript:( function () { 
-    var box = document.getElementById('coord-tracker');
-    if (!box) { 
-        box=document.createElement('div');
-        box.id='coord-tracker';
-        box.style.position='fixed';
-        box.style.background='rgba(0,0,0,0.8)';
-        box.style.color='#fff';
-        box.style.fontSize='12px';
-        box.style.zIndex='999999';
-        document.body.appendChild(box);
-    }
-    document.onmousemove = function(e) { 
-        box.style.left = (e.clientX+15) + 'px';
-        box.style.top = (e.clientY+15) + 'px';
-        box.innerHTML= 'X: '+e.pageX+' | Y: '+e.pageY;
-    };
-})();
+//javascript:( function () { 
+//    var box = document.getElementById('coord-tracker');
+//    if (!box) { 
+//        box=document.createElement('div');
+//        box.id='coord-tracker';
+//        box.style.position='fixed';
+//        box.style.background='rgba(0,0,0,0.8)';
+//        box.style.color='#fff';
+//        box.style.fontSize='12px';
+//        box.style.zIndex='999999';
+//        document.body.appendChild(box);
+//    }
+//    document.onmousemove = function(e) { 
+//        box.style.left = (e.clientX-15) + 'px';
+//        box.style.top = (e.clientY+15) + 'px';
+//        box.innerHTML= 'X: '+e.pageX+' | Y: '+e.pageY;
+//    };
+//})();
 
 
 
-//sets up the masonry front page. post everything from frontPage.js
-import { frontContent } from './frontPage.js'
-const articleContainer = document.getElementsByClassName("container")[0]
-frontContent.forEach(post => {
-        const articleFull = document.createElement("div");
-        articleFull.innerHTML = `${post.content}`
-        articleFull.className = "placeholder"
-        articleContainer.append(articleFull)
-    })
+//post everything from frontPage.js
 
 
+//now position it
 export function setupMasonry() {
-    if (window.innerWidth < 1150) {} //return
-
     const container = document.querySelector('.container');
     const items = container.querySelectorAll('.container div');
 
+    function divWidth(x, multipleWidth) { 
+        return Math.min(270, Math.max(220, 0.232*x+0))*multipleWidth + 10*(multipleWidth-1)
+    } //recreating css width for a proper masonry function
+    
+    function divLeft(x) { return 220 + divWidth(window.innerWidth,1)*x + 10*x }
 
-    var lefts = new Set();
-    var tops = new Set();
-    items.forEach(function(item) { //get all lefts and tops
-        lefts.add(item.offsetLeft)
-        tops.add(item.offsetTop)
-    });
-    lefts = new Array(lefts)
-    tops = new Array(tops)
 
-    console.log(lefts,tops)
+    let masonColumn = -1
+    let masonBottoms = []
+    for (let item of items) {
+        //console.log("get", window.innerWidth,item.offsetLeft+item.offsetWidth-220)
+
+        item.style.position = 'absolute' 
+        item.style.width = `${divWidth(window.innerWidth, parseInt(item.dataset.multipleWidth))}px`
+
+        let isStarting = true
+        if (masonBottoms.length < 3) {
+            masonColumn += 1
+            item.style.left = `${divLeft(masonColumn)}px`;
+            item.style.top = `${container.offsetTop*isStarting + ((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
+            masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+
+            for (let step = 1; step < item.dataset.multipleWidth; step++) {
+                masonColumn += 1
+                masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+            }
+        }
+
+        else { //after first three placed
+            masonColumn = masonBottoms.indexOf(Math.min(...masonBottoms)) 
+            isStarting = false
+
+            item.style.left = `${divLeft(masonColumn)}px`;
+            item.style.top = `${5+container.offsetTop*isStarting + ((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
+            masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+        }
+
+
+        console.log(masonBottoms)
+    }
+
 }
 
 window.addEventListener('load', setupMasonry); //run on page load

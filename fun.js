@@ -1,14 +1,24 @@
 // FUN STUFF
 
-//home page
-function updateTime() {
-            let now = new Date();
-            const options = { hour: 'numeric', minute: '2-digit', hour12: false };
-            document.getElementById("funCurrentTime").innerHTML = now.toLocaleTimeString([], options);
-        }
-        
-updateTime(); //run on page load and update every second - could optimise to every minute
-setInterval(updateTime, 1000);
+//create masonry divs
+import { frontContent } from './frontPage.js'
+import { setupMasonry } from './scripts.js';
+
+const articleContainer = document.getElementsByClassName("container")[0]
+frontContent.forEach(post => {
+        const articleFull = document.createElement("div");
+        articleFull.innerHTML = `${post.content}`;
+        articleFull.className = "placeholder";
+        articleFull.dataset.id = post.id; 
+        articleFull.dataset.multipleWidth = post.width; 
+        articleContainer.append(articleFull);
+    });
+setupMasonry();
+window.addEventListener('load', () => setupMasonry('.container'));
+window.addEventListener('resize', () => setupMasonry('.container'));
+
+
+
 
 
 
@@ -148,3 +158,15 @@ function mulberry32(mySeed) {
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
+
+
+
+//time
+function updateTime() {
+            let now = new Date();
+            const options = { hour: 'numeric', minute: '2-digit', hour12: false };
+            document.getElementById("funCurrentTime").innerHTML = now.toLocaleTimeString([], options);
+        }
+        
+updateTime(); //run on page load and update every second - could optimise to every minute
+setInterval(updateTime, 1000);

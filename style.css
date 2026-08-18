@@ -57,8 +57,8 @@
     color: white;
     text-align: right;
     margin: 5px;
-    font-family: mcFont;
-    font-size: 20px;
+    font-family: titleFont;
+    font-size: 25px;
     letter-spacing: -3%;
 }
 
@@ -113,11 +113,17 @@ html {
     margin-bottom: 0px;
     white-space: nowrap;
 }
-@media (max-width: 1352px) { /*move it if screen too small*/
+@media (max-width: 1450px) { /*move it if screen too small*/
     #titletext {
         margin-top: 0px;
         margin-left: 200px;
     }
+}
+.ellipsis {
+    visibility: hidden;
+}
+.shown {
+    visibility: visible;
 }
 
 
