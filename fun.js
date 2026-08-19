@@ -3,12 +3,14 @@
 //create masonry divs
 import { frontContent } from './frontPage.js'
 import { setupMasonry } from './scripts.js';
+import { divWidth } from './scripts.js';
 
 const articleContainer = document.getElementsByClassName("container")[0]
 frontContent.forEach(post => {
         const articleFull = document.createElement("div");
         articleFull.innerHTML = `${post.content}`;
         articleFull.className = "placeholder";
+        articleFull.style.position = "absolute";
         articleFull.dataset.id = post.id; 
         articleFull.dataset.multipleWidth = post.width; 
         articleContainer.append(articleFull);
@@ -18,8 +20,9 @@ window.addEventListener('load', setupMasonry);
 window.addEventListener('resize', setupMasonry);
 
 
-
-
+//chat
+const comments = document.getElementById("comments")
+comments.setAttribute("width", `${divWidth(window.innerWidth, 2)-50}px`);
 
 
 //run this on site load, fills in funny splash text and stuff
