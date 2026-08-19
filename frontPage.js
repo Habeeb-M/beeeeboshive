@@ -39,7 +39,7 @@ export const frontContent = [
         'id': 100,
         'width': '2',
         'date': null,
-        'content': `<ws-widget id="comments" type="comments" iid="6442" settings=${widgetSettings}></ws-widget>`
+        'content': `<ws-widget id="comments" type="comments" iid="6442" name="apiary" settings=${widgetSettings}></ws-widget>`
     },
     {
         'id': 6,
@@ -47,11 +47,5 @@ export const frontContent = [
         'date': null,
         'content': `something of a placeholder<br> blah<br>blah<br>blah<br>thanks to widgetstar, hero patterns!`
     },
-    {
-        'id': 7,
-        'width': '1',
-        'date': null,
-        'content': `<ws-widget type="spotify-status" iid="6445" embed="script"></ws-widget>`
-    }
 ]
 

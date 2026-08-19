@@ -176,3 +176,30 @@ window.addEventListener('load', () => {
     updateTime()
     setInterval(updateTime, 1000);
 });
+
+
+
+//spotify
+export const logNowPlaying = async () => {
+  try {
+    const response = await fetch("https://beeeeboshive.beeeeboshive.workers.dev/");
+    const data = await response.json();
+
+    console.log(data)
+
+    if (data) {
+      console.log(`🎧 NOW PLAYING: "${data.title}" by ${data.artist}`);
+      console.log(`🖼️ Album Cover: ${data.albumImageUrl}`);
+      console.log(`🔗 Link: ${data.songUrl}`);
+    } else {
+      console.log("⏸️ PAUSED: No track is currently playing right now.");
+    }
+    
+    return data;
+  } catch (error) {
+    console.error("spotify broken", error.message);
+  }
+};
+
+logNowPlaying();
+
