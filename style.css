@@ -146,8 +146,15 @@ nav {
     text-align: center;
 }
 
+
 nav a {
     font-size: 25px;
+}
+
+.sidebar {
+    display: inline-block;
+    width: 210px;
+    grid-column: 1;
 }
 
 .controls {
