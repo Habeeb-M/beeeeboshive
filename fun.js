@@ -5,13 +5,14 @@ import { frontContent } from './frontPage.js'
 import { setupMasonry } from './scripts.js';
 import { divWidth } from './scripts.js';
 
+frontContent.sort((a, b) => a.number - b.number);
 const articleContainer = document.getElementsByClassName("container")[0]
 frontContent.forEach(post => {
         const articleFull = document.createElement("div");
         articleFull.innerHTML = `${post.content}`;
         articleFull.className = "placeholder";
         articleFull.style.position = "absolute";
-        articleFull.dataset.id = post.id; 
+        articleFull.id = post.id; 
         articleFull.dataset.multipleWidth = post.width; 
         articleContainer.append(articleFull);
     });
@@ -180,26 +181,41 @@ window.addEventListener('load', () => {
 
 
 //spotify
-export const logNowPlaying = async () => {
+export const updateSpotify = async () => {
   try {
     const response = await fetch("https://beeeeboshive.beeeeboshive.workers.dev/");
     const data = await response.json();
 
-    console.log(data)
-
-    if (data) {
-      console.log(`🎧 NOW PLAYING: "${data.title}" by ${data.artist}`);
-      console.log(`🖼️ Album Cover: ${data.albumImageUrl}`);
-      console.log(`🔗 Link: ${data.songUrl}`);
-    } else {
-      console.log("⏸️ PAUSED: No track is currently playing right now.");
+    var artistList = "";
+    for (let artist of data.artists) {
+        artistList += `<a href="${artist.url}">${artist.name}</a>` + `, `
     }
+    artistList = artistList.slice(0,artistList.length-2)
+    //console.log(artistList)
+
+    const releaseYear = new Date(data.releaseDate)
+
+    console.log(data)
+    document.getElementById("spotifyPlaying").innerHTML = (data.isPlaying) ? ("now playing... ") : ("last played... ")
+    document.getElementById("spotifySong").innerHTML = `<a href="${data.songUrl}">${data.title}</a>`
+    document.getElementById("spotifyArtist").innerHTML = artistList
+    document.getElementById("spotifyAlbum").innerHTML = `<a href="${data.albumUrl}">${data.albumTitle}</a>`
+    document.getElementById("spotifyDate").innerHTML = `(${releaseYear.getFullYear()})`;
+
+    document.getElementById("spotifyImage").src = data.albumImageUrl
+    document.getElementById("spotifyImage").style.width = `120px`;
     
-    return data;
+    
+    return;
   } catch (error) {
-    console.error("spotify broken", error.message);
+    console.error("spotify borken", error.message);
   }
 };
 
-logNowPlaying();
+updateSpotify();
+setTimeout(setupMasonry, 1000)
 
+setInterval(() => {
+    updateSpotify();
+    setTimeout(setupMasonry, 1000)
+}, 60000);

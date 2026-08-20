@@ -2,6 +2,7 @@ const widgetSettings = `%7B%22sort%22%3A%22newest%22%2C%22strings%22%3A%7B%22sub
 
 export const frontContent = [
     {
+        'number': 1,
         'id': 1,
         'width': '2',
         'date': null,
@@ -14,6 +15,7 @@ export const frontContent = [
     },
 
     {
+        'number': 2,
         'id': 2,
         'width': '1',
         'date': null,
@@ -24,28 +26,43 @@ export const frontContent = [
                     look at cool widgets or stickers or 88x31 <br>`
     },
     {
+        'number': 3,
         'id': 3,
         'width': '1',
         'date': null,
         'content': `sister sites: <br> wip...<br>hi`
     },
     {
+        'number': 4,
         'id': 4,
         'width': '1',
         'date': null,
         'content': `a hive that separates its members by their level will have its thinking done by hackers and its fighting done by noobs`
     },
     {
-        'id': 100,
+        'number': 7,
+        'id': "comments",
         'width': '2',
         'date': null,
         'content': `<ws-widget id="comments" type="comments" iid="6442" name="apiary" settings=${widgetSettings}></ws-widget>`
     },
     {
+        'number': 6,
         'id': 6,
         'width': '1',
         'date': null,
         'content': `something of a placeholder<br> blah<br>blah<br>blah<br>thanks to widgetstar, hero patterns!`
+    },
+    {
+        'number': 5,
+        'id': "spotify",
+        'width': '2',
+        'date': null,
+        'content': `<img id="spotifyImage">
+                    <span id="spotifyPlaying"></span> <br> 
+                    <span id="spotifySong"></span> <br>
+                    by <span id="spotifyArtist"></span> <br>
+                    from <span id="spotifyAlbum"></span>, <span id="spotifyDate"></span>`
     },
 ]
 

@@ -395,7 +395,7 @@ function backgroundTime(arg) {
 //recreating css width for a proper masonry function, and the corresponding left coordinate
 //220 is width of sidebar, 10 width of margin, 270 is max width. .232 seems to match the background resize
 export function divWidth(x, multipleWidth) {  return Math.min(270, Math.max(220, 0.232*x+0))*multipleWidth + 10*(multipleWidth-1) } 
-function divLeft(x) { return 220 + divWidth(window.innerWidth,1)*x + 10*x }
+function divLeft(x) { return divWidth(window.innerWidth,1)*x + 10*x }
 
 export function setupMasonry() {
     const container = document.querySelector('.container');
@@ -411,9 +411,10 @@ export function setupMasonry() {
         //for the first row, set their top and left, and set masonbottoms[masoncolumn] to the bottom. 
         //if multiple width make sure to skip columns and append to masonbottoms
         if (masonBottoms.length < 3) {
+            
             masonColumn += 1
             item.style.left = `${divLeft(masonColumn)}px`;
-            item.style.top = `${container.offsetTop + ((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
+            item.style.top = `${((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
             masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
 
             for (let step = 1; step < item.dataset.multipleWidth; step++) {
@@ -423,16 +424,24 @@ export function setupMasonry() {
         }
 
         else { //after first three placed
+
             masonColumn = masonBottoms.indexOf(Math.min(...masonBottoms)) //find the minimum bottom's index and add to this column 
             let masonTop = `${5 + ((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
 
             if (item.dataset.multipleWidth == 2) {//but if its multiplewidth it might overlap with an earlier element, so take the lower one
                 if (masonBottoms[masonColumn+1] > masonBottoms[masonColumn]) {
-                    console.log("conflict!")
+                    //console.log("conflict!")
                     masonTop = `${5 + ((masonBottoms[masonColumn+1]) ? masonBottoms[masonColumn+1] : 0)}px`
+                }
+
+                if (masonColumn == 2) {//if it is in 3rd column then take the lower one from the first two
+                    //console.log("double conflict")
+                    masonColumn = masonBottoms.indexOf(Math.min(masonBottoms[0],masonBottoms[1]))
+                    masonTop = `${5 + masonBottoms[masonColumn+1]}px`
                 }
             }
 
+            console.log(masonColumn)
             item.style.left = `${divLeft(masonColumn)}px`; 
             item.style.top = masonTop;
             masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
@@ -444,9 +453,8 @@ export function setupMasonry() {
         }
 
 
-        //console.log(item.dataset.id, masonBottoms)
+        console.log(item.dataset.id, masonBottoms)
     }
-
 }
 
 window.addEventListener('load', setupMasonry); //run on page load
