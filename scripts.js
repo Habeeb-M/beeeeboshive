@@ -441,7 +441,7 @@ export function setupMasonry() {
                 }
             }
 
-            console.log(masonColumn)
+            //console.log(masonColumn)
             item.style.left = `${divLeft(masonColumn)}px`; 
             item.style.top = masonTop;
             masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
@@ -453,7 +453,7 @@ export function setupMasonry() {
         }
 
 
-        console.log(item.dataset.id, masonBottoms)
+        //console.log(item.dataset.id, masonBottoms)
     }
 }
 

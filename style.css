@@ -175,6 +175,12 @@ nav a {
     min-width: 200px;
 }
 
+.container .date{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
 
 
 
@@ -197,6 +203,9 @@ nav a {
 }
 #spotifyImage {
     float: right;
+    margin-right: 1px;
+    margin-top: 5px;
+    vertical-align: middle;
 }
 #spotifyDate {
     font-style: italic;

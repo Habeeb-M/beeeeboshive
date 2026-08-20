@@ -9,6 +9,11 @@ articles.forEach(post => {
         articleFull.className = "placeholder"
         articleFull.dataset.id = post.id; 
         articleFull.dataset.multipleWidth = post.width; 
+        articleFull.dataset.date = post.date;
+
+        const articleDate = new Date(post.date)
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        articleFull.innerHTML += `<span class="date">${articleDate.toLocaleDateString('en-GB', options)}</span>`
         articleContainer.append(articleFull)
     })
 

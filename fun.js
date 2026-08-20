@@ -72,7 +72,7 @@ function honeyFun() {
 
     //honey splash 3 - area
     let currentDayRounded = Math.round(currentDay+0.5);
-    let funExplorationArea = [" patch", " grove", " field", "n orchard", " pasture", " thicket", " meadow", " garden", " oasis"]
+    let funExplorationArea = [" patch", " grove", " field", "n orchard", " pasture", " thicket", " meadow", " garden", "n oasis"]
     let rng1 = mulberry32(currentDayRounded+0.5)*(funExplorationArea.length-1)
     //console.log(mulberry32(currentDayRounded))
 
@@ -191,19 +191,17 @@ export const updateSpotify = async () => {
         artistList += `<a href="${artist.url}">${artist.name}</a>` + `, `
     }
     artistList = artistList.slice(0,artistList.length-2)
-    //console.log(artistList)
+    //console.log(data)
 
     const releaseYear = new Date(data.releaseDate)
 
-    console.log(data)
     document.getElementById("spotifyPlaying").innerHTML = (data.isPlaying) ? ("now playing... ") : ("last played... ")
     document.getElementById("spotifySong").innerHTML = `<a href="${data.songUrl}">${data.title}</a>`
     document.getElementById("spotifyArtist").innerHTML = artistList
     document.getElementById("spotifyAlbum").innerHTML = `<a href="${data.albumUrl}">${data.albumTitle}</a>`
     document.getElementById("spotifyDate").innerHTML = `(${releaseYear.getFullYear()})`;
-
-    document.getElementById("spotifyImage").src = data.albumImageUrl
     document.getElementById("spotifyImage").style.width = `120px`;
+    document.getElementById("spotifyImage").src = data.albumImageUrl
     
     
     return;

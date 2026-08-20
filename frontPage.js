@@ -11,7 +11,7 @@ export const frontContent = [
                     [!] a<span id="funExplorationArea"></span> of nearby <span id="funExplorationFlora"></span> has been discovered!<br><br>
                     [-] <span id="funHoneySplashSeason"></span><br>
                     [?] <span id="funResearch"></span><br>
-                    [-] <span id="funStatus"></span><br></br>`
+                    [-] <span id="funStatus"></span>`
     },
 
     {
