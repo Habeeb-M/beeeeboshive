@@ -152,7 +152,7 @@ nav a {
 }
 
 .sidebar {
-    display: inline-block;
+    display: block;
     width: 210px;
     grid-column: 1;
 }

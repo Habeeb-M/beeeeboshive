@@ -398,6 +398,8 @@ export function divWidth(x, multipleWidth) {  return Math.min(270, Math.max(220,
 function divLeft(x) { return divWidth(window.innerWidth,1)*x + 10*x }
 
 export function setupMasonry() {
+    if (moveCheckbox.checked) { return }
+
     const container = document.querySelector('.container');
     const items = container.querySelectorAll('.container div');
 
@@ -485,3 +487,99 @@ window.addEventListener('resize', setupMasonry); //recalculates masonry if windo
 
 
 
+/////////
+// FUN //
+/////////
+
+//moveable boxe things
+const moveCheckbox = document.getElementById("moveCheckbox")
+var placeholderArray = undefined;
+var prePositions = undefined;
+
+//add the move controls
+function moveFunction() {
+    placeholderArray = Array.from(document.querySelectorAll(".placeholder"))
+
+    if (moveCheckbox.checked) {
+        prePositions = placeholderArray.map( element => {//get the positions before. do this before moving stuff
+            return {
+                left: element.getBoundingClientRect().left + window.scrollX,
+                top: element.getBoundingClientRect().top + window.scrollY,
+                width: parseFloat(window.getComputedStyle(element).width) - ((element.parentElement.classList.value=="container") ? (52) : (0)),
+                parent: element.parentElement
+            }
+        })
+
+        console.log(placeholderArray)
+
+    
+        placeholderArray.forEach((element, index) => {//now set to absolute(for moving) and set the positions absolutely
+            element.style.position = "absolute";
+            document.body.appendChild(element); 
+            element.style.left = prePositions[index].left - 5 + "px" ;
+            element.style.top = prePositions[index].top - 5 + "px";
+            element.style.width = prePositions[index].width + "px";
+
+            const moveControls = document.createElement("div")
+            moveControls.innerHTML = "test";
+            moveControls.className = "moveControls";
+            moveControls.style.position = "absolute";
+            element.append(moveControls);
+
+            dragElement(moveControls);
+        });
+    }
+
+    else {
+        placeholderArray.forEach((element, index) => {//now set to relative(for masonry) and reset the positions
+            element.querySelector(".moveControls").remove();
+
+            prePositions[index].parent.appendChild(element); 
+            element.style.position = "relative";
+            element.style.position = "";
+            element.style.left = "";
+            element.style.top = "";
+            element.style.width = "";
+        });
+        setupMasonry()
+    }
+}
+document.getElementById('moveCheckbox').addEventListener('click', moveFunction);
+
+
+//actual moving
+function dragElement(elem) { 
+    var startX = 0, startY = 0;
+    var elemStartLeft = 0, elemStartTop = 0;
+    
+    elem.onmousedown = dragMouseDown; //run if start drag
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        
+        //mouse and parent initial pos
+        startX = e.clientX;
+        startY = e.clientY;
+        elemStartLeft = elem.parentElement.offsetLeft;
+        elemStartTop = elem.parentElement.offsetTop;
+        
+        document.onmouseup = closeDragElement; //run if stop drag
+        document.onmousemove = elementDrag; //run if move
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        var mouseMovedX = e.clientX - startX;
+        var mouseMovedY = e.clientY - startY;
+        
+        elem.parentElement.style.left = (elemStartLeft + mouseMovedX) + "px";
+        elem.parentElement.style.top = (elemStartTop + mouseMovedY) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
