@@ -4,7 +4,7 @@ export const frontContent = [
     {
         'number': 1,
         'id': 1,
-        'width': '2',
+        'width': 2,
         'date': null,
         'content': `[!] welcome to the hive! the time is currently <span id="funTime">xx:xx</span><span id="funCurrentTime"></span>. <br>
                     [-] honey production is at <span id="funCurrentHoney"></span>%! <span id="funHoneySplash"></span><br>
@@ -17,7 +17,7 @@ export const frontContent = [
     {
         'number': 2,
         'id': 2,
-        'width': '1',
+        'width': 1,
         'date': null,
         'content':  `todo... <br>
                     mess with custom borders <br>
@@ -28,41 +28,62 @@ export const frontContent = [
     {
         'number': 3,
         'id': 3,
-        'width': '1',
+        'width': 1,
         'date': null,
-        'content': `sister sites: <br> wip...<br>hi`
+        'content': `sister sites: <br> <a href=https://mesityl.neocities.org/>mesitylene oxide</a>`
     },
     {
         'number': 4,
         'id': 4,
-        'width': '1',
+        'width': 1,
         'date': null,
         'content': `a hive that separates its members by their level will have its thinking done by hackers and its fighting done by noobs`
     },
     {
-        'number': 7,
+        'number': 100,
         'id': "comments",
-        'width': '2',
+        'width': 2,
         'date': null,
         'content': `<ws-widget id="comments" type="comments" iid="6442" name="apiary" settings=${widgetSettings}></ws-widget>`
     },
     {
         'number': 6,
         'id': 6,
-        'width': '1',
+        'width': 1,
         'date': null,
-        'content': `something of a placeholder<br> blah<br>blah<br>blah<br>thanks to widgetstar, hero patterns!`
+        'content': `thanks to widgetstar, hero patterns!`
     },
     {
         'number': 5,
         'id': "spotify",
-        'width': '2',
+        'width': 2,
         'date': null,
         'content': `<img id="spotifyImage">
                     <span id="spotifyPlaying"></span> <br> 
                     <span id="spotifySong"></span> <br>
                     by <span id="spotifyArtist"></span> <br>
                     from <span id="spotifyAlbum"></span>, <span id="spotifyDate"></span>`
+    },
+    {
+        'number': 7,
+        'id': 7,
+        'width': '1',
+        'date': null,
+        'content': `a moist owlette would likely be dried with a small towelette`
+    },
+    {
+        'number': 8,
+        'id': 8,
+        'width': '1',
+        'date': null,
+        'content': `the existentialist club once labelled me, "most likely to be"`
+    },
+    {
+        'number': 9,
+        'id': 9,
+        'width': '1',
+        'date': null,
+        'content': `from the salt of the bay to the end of the earth`
     },
 ]
 
