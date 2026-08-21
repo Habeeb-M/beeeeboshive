@@ -47,7 +47,7 @@ export const frontContent = [
         'content': `<ws-widget id="comments" type="comments" iid="6442" name="apiary" settings=${widgetSettings}></ws-widget>`
     },
     {
-        'number': 6,
+        'number': 7,
         'id': 6,
         'width': 1,
         'date': null,
@@ -65,25 +65,32 @@ export const frontContent = [
                     from <span id="spotifyAlbum"></span>, <span id="spotifyDate"></span>`
     },
     {
-        'number': 7,
+        'number': 8,
         'id': 7,
         'width': '1',
         'date': null,
         'content': `a moist owlette would likely be dried with a small towelette`
     },
     {
-        'number': 8,
+        'number': 9,
         'id': 8,
         'width': '1',
         'date': null,
         'content': `the existentialist club once labelled me, "most likely to be"`
     },
     {
-        'number': 9,
+        'number': 10,
         'id': 9,
         'width': '1',
         'date': null,
         'content': `from the salt of the bay to the end of the earth`
+    },
+    {
+        'number': 6,
+        'id': "hitCounter",
+        'width': '1',
+        'date': null,
+        'content': `<ws-widget type="hc" iid="7090"></ws-widget>`
     },
 ]
 

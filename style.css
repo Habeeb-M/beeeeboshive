@@ -151,10 +151,17 @@ nav a {
     font-size: 25px;
 }
 
+
 .sidebar {
     display: block;
     width: 210px;
     grid-column: 1;
+}
+
+.sidebar img {
+    image-rendering: pixelated;
+    margin: -2px;
+    width: 40px;
 }
 
 .controls {
