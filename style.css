@@ -189,10 +189,19 @@ nav a {
     min-width: 200px;
 }
 
-.container .date{
+.container .date {
     position: absolute;
     bottom: 10px;
     right: 10px;
+}
+
+.socials span {
+    background-color: black;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 15px;
+    position: absolute;
 }
 
 

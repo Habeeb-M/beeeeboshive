@@ -583,3 +583,50 @@ function dragElement(elem) {
         document.onmousemove = null;
     }
 }
+
+
+
+//socials popup
+const poppedupBoxes = [0, 0, 0]
+
+function createPopup(input) {
+    poppedupBoxes[input] = (poppedupBoxes[input]) ? 0 : 1; //updates which are on and off
+    var boxID = ""; 
+    var popupText = ""; 
+
+    switch(input) {//html id
+        case 0: boxID = "logoMail"; break; 
+        case 1: boxID = "logoDiscord"; break; 
+        case 2: boxID = "logoMinecraft"; break; 
+    }
+    const parentButton = document.getElementById(boxID); //get the button
+
+
+    if (poppedupBoxes[input] == 1) {
+        switch(input) {//actual text in the popup
+            case 0: popupText = "figure out the cipher!<br>923663>@92>>65a__do8>2:=]4@>"; break; 
+            case 1: popupText = "@habeebm"; break; 
+            case 2: popupText = "rustikmagma"; break; 
+        }
+
+        const popupBox = document.createElement("span");
+        popupBox.innerHTML = popupText;
+        popupBox.id = `popupBox${input}`;
+        parentButton.append(popupBox);
+        popupBox.style.visibility = "hidden"; //add it early and hide it so i can get the width
+
+
+        //parent pos is parentButton.getBoundingClientRect().top+window.scrollY
+        popupBox.style.left = `${Math.max(0, parentButton.getBoundingClientRect().left+window.scrollX - popupBox.getBoundingClientRect().width/2 + 15)}px`
+        popupBox.style.top = `${parentButton.getBoundingClientRect().top+window.scrollY + 18}px`
+        popupBox.style.visibility = "";
+        
+    }
+
+    else if (poppedupBoxes[input] === 0) {
+        parentButton.querySelector(`#popupBox${input}`).remove()
+    }
+}
+document.getElementById('logoMail').addEventListener('click', () => createPopup(0));
+document.getElementById('logoDiscord').addEventListener('click', () => createPopup(1));
+document.getElementById('logoMinecraft').addEventListener('click', () => createPopup(2));
