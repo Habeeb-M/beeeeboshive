@@ -609,22 +609,35 @@ function createPopup(input) {
             case 2: popupText = "rustikmagma"; break; 
         }
 
+        const arrowUp = document.createElement("div");
+        arrowUp.classList = `arrowUp`;
         const popupBox = document.createElement("span");
         popupBox.innerHTML = popupText;
-        popupBox.id = `popupBox${input}`;
-        parentButton.append(popupBox);
-        popupBox.style.visibility = "hidden"; //add it early and hide it so i can get the width
+        popupBox.classList = `popupBox`;
 
+        const popupWrapper = document.createElement("div");
+        popupWrapper.id = `popupWrapper${input}`
+        popupWrapper.classList = `popupWrapper`;
+        popupWrapper.append(arrowUp, popupBox)
+        parentButton.append(popupWrapper)
 
-        //parent pos is parentButton.getBoundingClientRect().top+window.scrollY
-        popupBox.style.left = `${Math.max(0, parentButton.getBoundingClientRect().left+window.scrollX - popupBox.getBoundingClientRect().width/2 + 15)}px`
-        popupBox.style.top = `${parentButton.getBoundingClientRect().top+window.scrollY + 18}px`
-        popupBox.style.visibility = "";
+        popupWrapper.style.visibility = "hidden"; //add it early and hide it so i can get the width
+        const parentRect = parentButton.getBoundingClientRect();
+        const popupRect = popupWrapper.getBoundingClientRect();
+        popupWrapper.style.left = `${parentRect.left + parentRect.width/2 - popupRect.width/2}px`
+        popupWrapper.style.top = `${parentRect.top+window.scrollY + 18}px`
+
+        //offscreen check
+        if (parentRect.left + parentRect.width/2 - popupRect.width/2 < 0) { popupBox.style.transform = `translateX(${70}px)` }
+        popupWrapper.style.visibility = "";
+        popupWrapper.style.clipPath = "circle(120% at 50% 50%)";
         
     }
 
     else if (poppedupBoxes[input] === 0) {
-        parentButton.querySelector(`#popupBox${input}`).remove()
+        const popupWrapper = parentButton.querySelector(`#popupWrapper${input}`)
+        popupWrapper.style.clipPath = "circle(0% at 50% 50%)";
+        setTimeout(() => popupWrapper.remove(), 500); //match the transition duration in css
     }
 }
 document.getElementById('logoMail').addEventListener('click', () => createPopup(0));
