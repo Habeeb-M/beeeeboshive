@@ -75,6 +75,16 @@ a, button, input, label, a img {
 
 
 
+ canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none; /* Allows clicking through particles */
+    z-index: 5;
+    image-rendering: pixelated;
+}
+
+
 /*content*/
 html {
     /* background: #76a97a no-repeat; */

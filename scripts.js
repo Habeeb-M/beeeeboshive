@@ -643,3 +643,124 @@ function createPopup(input) {
 document.getElementById('logoMail').addEventListener('click', () => createPopup(0));
 document.getElementById('logoDiscord').addEventListener('click', () => createPopup(1));
 document.getElementById('logoMinecraft').addEventListener('click', () => createPopup(2));
+
+
+
+//pollen emitter.. create canvas
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = 4000; //this is stupid but 4000 good for now...
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+//particle and bee constructor
+class Particle {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 4 + 2; 
+        this.speedY = Math.random() + 0.3; 
+        this.speedX = (Math.random() - 0.5) * 1;
+        this.age = 0;
+        this.death = Math.random()*500;
+    }
+
+    update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.age += 1;
+    }
+
+    draw() {
+        ctx.fillStyle = `rgba(255, 255, 0)`;
+        ctx.fillRect(this.x, this.y, this.size, this.size);
+    }
+}
+
+class Bee {
+    constructor() {
+        this.x = 2000;
+        this.y = 100;
+    }
+
+    update(speedX, speedY) {
+        this.x += speedX;
+        this.y += speedY;
+    }
+
+    draw() {
+         ctx.drawImage(playerImg, this.x, this.y, 20, 20);
+    }
+}
+
+
+//follow mouse position
+let mouse = { x: 0, y: 0 };
+window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX + window.scrollX;
+    mouse.y = e.clientY + window.scrollY;
+});
+
+
+//create pollen and bee
+setInterval(() => { createParticle(mouse.x, mouse.y); }, 1000);
+
+function createParticle(x, y) {
+    for (let i = 0; i < 2; i++) {
+        particles.push(new Particle(x, y));
+    }
+}
+
+
+const playerImg = new Image();
+playerImg.src = './img/bee.png';
+const beeOne = new Bee();
+ctx.imageSmoothingEnabled = false;
+
+
+//animate pollen n bee
+const particles = [];
+var targetPollenIndex = 0;
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); //remove old one 
+
+    for (let i = particles.length - 1; i >= 0; i--) {//add new ones
+        particles[i].update();
+        particles[i].draw();
+
+        if (targetPollenIndex===undefined) {
+            if (particles[targetPollenIndex].age > particles[targetPollenIndex].death) {//kill target and switch
+                particles.splice(targetPollenIndex, 1);
+                targetPollenIndex = Math.floor(Math.random()*particles.length);
+            }
+        }
+
+        if (particles[i].age > particles[i].death) {//kill old ones
+            particles.splice(i, 1);
+        }
+    }
+
+    beeOne.draw()
+
+    //make bee go to some pollen
+    if (particles[targetPollenIndex]) {
+        //console.log(targetPollen)
+        const distanceVector = {x: particles[targetPollenIndex].x-beeOne.x, 
+                                y: particles[targetPollenIndex].y-beeOne.y, 
+                                dist: Math.sqrt((particles[targetPollenIndex].x-beeOne.x)**2+(particles[targetPollenIndex].y-beeOne.y)**2)/4} //speed
+        
+        if (distanceVector.dist > 5) {
+            beeOne.update(distanceVector.x/distanceVector.dist, distanceVector.y/distanceVector.dist)
+        }
+    }
+
+    requestAnimationFrame(animate); //animate canvas 
+}
+
+animate();
+
