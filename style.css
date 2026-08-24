@@ -63,6 +63,17 @@
 }
 
 
+/* cursor */
+body {
+    cursor: url("./img/cursorClosed.png"), default;
+}
+
+
+a, button, input, label, a img {
+    cursor: url("./img/cursorOpen.png"), pointer;
+}
+
+
 
 /*content*/
 html {
@@ -193,6 +204,10 @@ nav a {
     position: absolute;
     bottom: 10px;
     right: 10px;
+}
+
+.socials a {
+    cursor: pointer
 }
 
 .popupBox {

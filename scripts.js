@@ -628,7 +628,7 @@ function createPopup(input) {
         popupWrapper.style.top = `${parentRect.top+window.scrollY + 18}px`
 
         //offscreen check
-        if (parentRect.left + parentRect.width/2 - popupRect.width/2 < 0) { popupBox.style.transform = `translateX(${70}px)` }
+        if (parentRect.left + parentRect.width/2 - popupRect.width/2 < 0) { popupBox.style.transform = `translateX(${74}px)` }
         popupWrapper.style.visibility = "";
         popupWrapper.style.clipPath = "circle(120% at 50% 50%)";
         
