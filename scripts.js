@@ -389,7 +389,7 @@ function backgroundTime(arg) {
 
 
 
-//post everything from frontPage.js (done in fun.js now)
+//post everything from frontPage.js (done in apiary.js now)
 //now position it
 
 //recreating css width for a proper masonry function, and the corresponding left coordinate
