@@ -1,4 +1,4 @@
 img/
 .well-known/
-frontPage.js
-articles.js
+apiary.json
+hives.json
