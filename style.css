@@ -216,6 +216,10 @@ nav a {
     right: 10px;
 }
 
+.container .articleTitle {
+    font-style: italic;
+}
+
 .socials a {
     cursor: pointer
 }

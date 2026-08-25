@@ -14,16 +14,21 @@ async function loadArticles() {
 
         articles.forEach(post => {
             const articleFull = document.createElement("div");
-            articleFull.innerHTML = `${post.content}`
+            articleFull.innerHTML = post.content.join("");
             articleFull.className = "placeholder"
             articleFull.id = post.id; 
             articleFull.dataset.multipleWidth = post.width; 
             articleFull.dataset.date = post.date;
+            articleFull.dataset.author = post.author;
+            articleFull.dataset.title = post.title;
 
-            //add date
+            articleFull.innerHTML = `<span class="articleTitle">${post.title}</span>` + "<br><br>" + articleFull.innerHTML;
+
+            //add a hidden line to increase padding naturally, and add date/author
             const articleDate = new Date(post.date)
             const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            articleFull.innerHTML += `<span class="date">${articleDate.toLocaleDateString('en-GB', options)}</span>`
+
+            articleFull.innerHTML += `<br><span class="hidden">g</span> <span class="date">—${post.author}, ${articleDate.toLocaleDateString('en-GB', options)}</span>`
             articleContainer.append(articleFull)
         })
 
