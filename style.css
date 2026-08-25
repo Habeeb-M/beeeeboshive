@@ -24,7 +24,7 @@
 }
 @font-face {
   font-family: mcFont; 
-  src: url(./img/fonts/minecraft.otf); 
+  src: url, (./img/fonts/minecraft.otf); 
 }
 
 
@@ -64,7 +64,7 @@
 
 
 /* cursor */
-body {
+html {
     cursor: url("./img/cursorClosed.png"), default;
 }
 
