@@ -27,12 +27,13 @@ async function loadArticles() {
             articleContainer.append(articleFull)
         })
 
+        setupMasonry()
+
     } catch (error) {
         console.error(error);
     }
 }
 
 loadArticles()
-setupMasonry()
 window.addEventListener('load', setupMasonry);
 window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes

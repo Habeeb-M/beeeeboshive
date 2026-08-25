@@ -46,13 +46,15 @@ async function loadArticles() {
             setTimeout(setupMasonry, 1000)
         }, 60000);
 
+        setupMasonry()
+
+
     } catch (error) {
         console.error(error);
     }
 }
 
 loadArticles()
-setupMasonry()
 window.addEventListener('load', setupMasonry);
 window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
 
