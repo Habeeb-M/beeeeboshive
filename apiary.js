@@ -31,11 +31,9 @@ async function loadArticles() {
         setInterval(honeyFun, 60000);
 
         //time update call
-        window.addEventListener('load', () => {
-            document.getElementById('funTime').style.display = "none";
-            updateTime()
-            setInterval(updateTime, 1000);
-        });
+        document.getElementById('funTime').style.display = "none";
+        updateTime()
+        setInterval(updateTime, 1000);
 
         //spotify call
         updateSpotify();

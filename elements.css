@@ -1,31 +1,56 @@
-/* 
-    Don't use this file to edit your site style! Create a different CSS file for that.
-    This file defines how custom elements (like sitebox) will look like.
-    Setting CSS that breaks main nekoweb site on purpose is prohibited and may result in ban and site deletion! 
-*/
+@font-face {
+  font-family: mainFont; 
+  src: url(./img/fonts/Millennium-Regular_0.ttf);
+}
 
-/* Must start with ".site-box". Change how your website will appear on main nekoweb site: https://nekoweb.org/assets/siteboxes.png */
+
 .site-box {
     text-align: center;
-    background-image: url(/assets/cookiebox.png); /* Only your-username.nekoweb.org URLs allowed, use FULL url to your file like https://your-username.nekoweb.org/your-username.nekoweb.org/bg.png */
+
+    background: #f1e5d8;
+    border: 1px dashed green;
+    border-radius: 5px;
+    
+
+    /*background-image: url('https://beeeeboshive.nekoweb.org/beeeeboshive.nekoweb.org/img/logo.png');*/
+    background-image: url('img/logo.png'); 
     background-repeat: no-repeat;
-    color: #b08271;
-    font-size: 12px;
+    background-position: center 10;
+    background-size: 260px;
+    image-rendering: pixelated;
+
+    font-size: 20px;
+    font-family: mainFont;
 }
-.site-box > a > p {
-    color: var(--darkbrown);
+
+.site-box a {
+    text-decoration: none;
     font-weight: bold;
-}
-.site-box > a > span {
     color: var(--darkbrown);
+    top: 90px;
 }
 
-/* Style for your 'Follow on Nekoweb' button (<iframe src="https://nekoweb.org/frame/follow" frameborder="0" width="170" height="28"></iframe>) */
+
+.site-box a .site-title {
+    margin: 0px;
+    top: -15px;
+    font-size: 17px;
+    font-weight: 100;
+    color: orange;
+}
+
+
+
+.site-box .sitefeature {
+    display: none
+}
+
 .follow {
-
+    font-weight: bold;
+    font-family: mainFont;
+    font-size: 15px !important;
 }
 
-/* Style for your post box (must start with ".post-box") */
 .post-box {
     background-color: #fff2cc;
     border: 4px solid #ecbfa6;
