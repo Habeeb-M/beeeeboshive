@@ -1,24 +1,95 @@
 // FUN STUFF
 
 //create masonry divs
-import { frontContent } from './frontPage.js'
-import { setupMasonry } from './scripts.js';
-import { divWidth } from './scripts.js';
-
-frontContent.sort((a, b) => a.number - b.number);
+//now doing with json. move honeyfun call and time update call and spotify call into this
+import { setupMasonry } from './scripts.js'
 const articleContainer = document.getElementsByClassName("container")[0]
-frontContent.forEach(post => {
-        const articleFull = document.createElement("div");
-        articleFull.innerHTML = `${post.content}`;
-        articleFull.className = "placeholder";
-        articleFull.style.position = "absolute";
-        articleFull.id = post.id; 
-        articleFull.dataset.multipleWidth = post.width; 
-        articleContainer.append(articleFull);
-    });
-setupMasonry();
+
+async function loadArticles() {
+    try {
+        const response = await fetch('./apiary.json');
+        
+        if (!response.ok) {
+            throw new Error(`response status: ${response.status}`);
+        }
+        
+        const articles = await response.json();
+
+        articles.sort((a, b) => a.number - b.number);
+        articles.forEach(post => {
+            const articleFull = document.createElement("div");
+            articleFull.innerHTML = post.content.join("");
+            articleFull.className = "placeholder"
+            articleFull.id = post.id; 
+            articleFull.dataset.multipleWidth = post.width; 
+            
+            articleContainer.append(articleFull)
+        })
+
+        //honey call
+        honeyFun()
+        setInterval(honeyFun, 60000);
+
+        //time update call
+        window.addEventListener('load', () => {
+            document.getElementById('funTime').style.display = "none";
+            updateTime()
+            setInterval(updateTime, 1000);
+        });
+
+        //spotify call
+        updateSpotify();
+        setTimeout(setupMasonry, 1000)
+
+        setInterval(() => {
+            updateSpotify();
+            setTimeout(setupMasonry, 1000)
+        }, 60000);
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+loadArticles()
+setupMasonry()
 window.addEventListener('load', setupMasonry);
-window.addEventListener('resize', setupMasonry);
+window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
+
+
+
+//spotify
+export const updateSpotify = async () => {
+  try {
+    const response = await fetch("https://beeeeboshive.beeeeboshive.workers.dev/");
+    const data = await response.json();
+
+    var artistList = "";
+    for (let artist of data.artists) {
+        artistList += `<a href="${artist.url}">${artist.name}</a>` + `, `
+    }
+    artistList = artistList.slice(0,artistList.length-2)
+    //console.log(data)
+
+    const releaseYear = new Date(data.releaseDate)
+
+    document.getElementById("spotifyPlaying").innerHTML = (data.isPlaying) ? ("now playing... ") : ("last played... ")
+    document.getElementById("spotifySong").innerHTML = `<a href="${data.songUrl}">${data.title}</a>`
+    document.getElementById("spotifyArtist").innerHTML = artistList
+    document.getElementById("spotifyAlbum").innerHTML = `<a href="${data.albumUrl}">${data.albumTitle}</a>`
+    document.getElementById("spotifyDate").innerHTML = `(${releaseYear.getFullYear()})`;
+    document.getElementById("spotifyImage").style.width = `120px`;
+    document.getElementById("spotifyImage").src = data.albumImageUrl
+    
+    
+    return;
+  } catch (error) {
+    console.error("spotify borken", error.message);
+  }
+};
+
+
+
 
 
 //chat
@@ -149,8 +220,6 @@ function honeyFun() {
     document.getElementById("funResearch").innerHTML = funResearch[Math.round(rng3)];
     document.getElementById("funStatus").innerHTML = funStatus[Math.round(rng4)];
 }
-honeyFun()
-setInterval(honeyFun, 60000);
 
 
 
@@ -172,48 +241,6 @@ function updateTime() {
             document.getElementById("funCurrentTime").innerHTML = now.toLocaleTimeString([], options);
         }
         
-window.addEventListener('load', () => {
-    document.getElementById('funTime').style.display = "none";
-    updateTime()
-    setInterval(updateTime, 1000);
-});
 
 
 
-//spotify
-export const updateSpotify = async () => {
-  try {
-    const response = await fetch("https://beeeeboshive.beeeeboshive.workers.dev/");
-    const data = await response.json();
-
-    var artistList = "";
-    for (let artist of data.artists) {
-        artistList += `<a href="${artist.url}">${artist.name}</a>` + `, `
-    }
-    artistList = artistList.slice(0,artistList.length-2)
-    //console.log(data)
-
-    const releaseYear = new Date(data.releaseDate)
-
-    document.getElementById("spotifyPlaying").innerHTML = (data.isPlaying) ? ("now playing... ") : ("last played... ")
-    document.getElementById("spotifySong").innerHTML = `<a href="${data.songUrl}">${data.title}</a>`
-    document.getElementById("spotifyArtist").innerHTML = artistList
-    document.getElementById("spotifyAlbum").innerHTML = `<a href="${data.albumUrl}">${data.albumTitle}</a>`
-    document.getElementById("spotifyDate").innerHTML = `(${releaseYear.getFullYear()})`;
-    document.getElementById("spotifyImage").style.width = `120px`;
-    document.getElementById("spotifyImage").src = data.albumImageUrl
-    
-    
-    return;
-  } catch (error) {
-    console.error("spotify borken", error.message);
-  }
-};
-
-updateSpotify();
-setTimeout(setupMasonry, 1000)
-
-setInterval(() => {
-    updateSpotify();
-    setTimeout(setupMasonry, 1000)
-}, 60000);

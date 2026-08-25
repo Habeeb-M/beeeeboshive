@@ -24,7 +24,7 @@
 }
 @font-face {
   font-family: mcFont; 
-  src: url, (./img/fonts/minecraft.otf); 
+  src: url(./img/fonts/minecraft.otf); 
 }
 
 
