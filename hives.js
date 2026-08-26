@@ -12,6 +12,7 @@ async function loadArticles() {
         
         const articles = await response.json();
 
+        articles.sort((a, b) => b.number-a.number);
         articles.forEach(post => {
             const articleFull = document.createElement("div");
             articleFull.innerHTML = post.content.join("");
