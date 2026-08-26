@@ -257,6 +257,29 @@ nav a {
 }
 
 
+.imgHives {
+    float: right;
+    width: 40%;
+    padding: 1px;
+}
+.imgHives img {
+    width: 100%;
+}
+.imgHives figcaption {
+    font-size: 15px;
+}
+ul { 
+    list-style-type: "- ";
+    margin: 0px;
+    padding-left: 20px;
+}
+li {
+  padding-left: 1em;
+  text-indent: -1em;
+}
+ 
+
+
 
 
 #spotify {

@@ -23,6 +23,8 @@ async function loadArticles() {
             articleFull.id = post.id; 
             articleFull.dataset.multipleWidth = post.width; 
             
+            if (post.hover) { articleFull.title = post.hover }
+            
             articleContainer.append(articleFull)
         })
 
