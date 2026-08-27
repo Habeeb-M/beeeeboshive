@@ -17,13 +17,20 @@ async function loadArticles() {
 
         articles.sort((a, b) => a.number - b.number);
         articles.forEach(post => {
+            if (post.ignore == true) return
             const articleFull = document.createElement("div");
             articleFull.innerHTML = post.content.join("");
             articleFull.className = "placeholder"
             articleFull.id = post.id; 
+            articleFull.dataset.number = post.number; 
             articleFull.dataset.multipleWidth = post.width; 
             
             if (post.hover) { articleFull.title = post.hover }
+
+            //get latestpost
+            if (post.id == "latestPost") { 
+                loadHives()
+            }
             
             articleContainer.append(articleFull)
         })
@@ -57,6 +64,32 @@ async function loadArticles() {
 loadArticles()
 window.addEventListener('load', setupMasonry);
 window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
+
+
+
+async function loadHives() {
+    try {
+        const response = await fetch('./hives.json');
+        if (!response.ok) {throw new Error(`response status: ${response.status}`);}
+        
+
+        const articles = await response.json();
+        const post = articles.at(-1); 
+
+        
+        const latestPostDiv = document.getElementById("latestPost")
+        latestPostDiv.innerHTML += ` <span class="italic">${post.title}</span> (${post.date})` + "<br><br>"
+
+        //truncated post
+        latestPostDiv.innerHTML += post.content.slice(0,3).join('');
+        latestPostDiv.innerHTML += ". . . <br><br>"
+        latestPostDiv.innerHTML += `see the rest <a href=\"hives.html#${post.id}\">here!</a>`
+
+    
+    } catch (error) {console.error(error);}
+}
+
+
 
 
 
@@ -95,8 +128,8 @@ export const updateSpotify = async () => {
 
 
 //chat
-const comments = document.getElementById("comments")
-comments.setAttribute("width", `${divWidth(window.innerWidth, 2)-50}px`);
+//const comments = document.getElementById("comments")
+//comments.setAttribute("width", `${divWidth(window.innerWidth, 2)-50}px`);
 
 
 //run this on site load, fills in funny splash text and stuff
@@ -129,16 +162,16 @@ function honeyFun() {
     //console.log(currentTime, sunriseTime(currentDay), sunsetTime(currentDay))
     
     if (sunriseTime(currentDay) - 0.05 < currentTime && currentTime <= sunriseTime(currentDay)) {
-        honeySplash = "bees are waking up!";
+        honeySplash = "bees are <span class=\"bold\">waking up</span>!";
     }
     else if (sunriseTime(currentDay) < currentTime && currentTime <= sunsetTime(currentDay) - 0.05) {
-        honeySplash = "bees are out pollinating!";
+        honeySplash = "bees are <span class=\"bold\">out pollinating</span>!";
     }
     else if (sunsetTime(currentDay) - 0.05 < currentTime && currentTime <= sunsetTime(currentDay) + 0.05 ) {
-        honeySplash = "bees are returning home!";
+        honeySplash = "bees are <span class=\"bold\">returning home</span>!";
     }
     else{
-        honeySplash = "bees are resting!";
+        honeySplash = "bees are <span class=\"bold\">resting</span>!";
     }
 
 
@@ -165,25 +198,25 @@ function honeyFun() {
     let rng2 = mulberry32(rng1)
     let flower = ""
     if (60 <= currentDay && currentDay <= 151) { 
-        honeySplashSeason = "larvae production is ramping up for spring!";
+        honeySplashSeason = "larvae production is ramping up for <span class=\"bold\">spring</span>!";
 
         rng2 = rng2*(funExplorationFloraSpring.length-1)
         flower = funExplorationFloraSpring[Math.round(rng2)];
     }
     else if (152 <= currentDay && currentDay <= 243) { 
-        honeySplashSeason = "bees are out pollinating for summer!";
+        honeySplashSeason = "bees are out pollinating for <span class=\"bold\">summer</span>!";
 
         rng2 = rng2*(funExplorationFloraSummer.length-1)
         flower = funExplorationFloraSummer[Math.round(rng2)];
     }
     else if (244 <= currentDay && currentDay <= 334) { 
-        honeySplashSeason = "bees are slowing down for autumn!";
+        honeySplashSeason = "bees are slowing down for <span class=\"bold\">autumn</span>!";
 
         rng2 = rng2*(funExplorationFloraAutumn.length-1)
         flower = funExplorationFloraAutumn[Math.round(rng2)];
     }
     else { 
-        honeySplashSeason = "bees are conserving their energy for winter!"
+        honeySplashSeason = "bees are conserving their energy for <span class=\"bold\">winter</span>!"
 
         rng2 = rng2*(funExplorationFloraWinter.length-1)
         flower = funExplorationFloraWinter[Math.round(rng2)];

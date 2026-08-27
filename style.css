@@ -150,6 +150,12 @@ html {
 .shown {
     visibility: visible;
 }
+.italic {
+    font-style: italic;
+}
+.bold {
+    font-weight: bold;
+}
 
 
 
@@ -273,10 +279,7 @@ ul {
     margin: 0px;
     padding-left: 20px;
 }
-li {
-  padding-left: 1em;
-  text-indent: -1em;
-}
+
  
 
 
