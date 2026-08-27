@@ -35,6 +35,15 @@ async function loadArticles() {
 
         setupMasonry()
 
+        //scroll to post
+        const hash = window.location.hash.slice(1,100);
+        if (hash) {
+          const targetElement = document.getElementById(hash); 
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+
     } catch (error) {
         console.error(error);
     }
