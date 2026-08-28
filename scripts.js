@@ -192,6 +192,7 @@ function easedVideo(startIndex, stopIndex) {
     const totalTime = modulo(stopTime-startTime, 120);
 
     //set video, start time
+    console.log("log", currentWeather)
     videoLayer.src = (currentWeather) ? 'img/background/rbg-video.mp4' : 'img/background/bg-video.mp4'
     videoLayer.currentTime = indexToTime(startIndex);
     videoLayer.addEventListener('ended', () => videoLayer.play()); //have to loop manually
@@ -307,12 +308,19 @@ sendButton.addEventListener('click', function() { //start animation on click
 //say 0 is clear and 1 is rain; initialise
 let currentWeather = 0;
 
-function weatherButtonFunction() {
-    if (!currentWeather) {updateImage(currentImage, currentImage.slice(0,20) + "r" + currentImage.slice(20,100))}
-    else {updateImage(currentImage, currentImage.slice(0,20) + currentImage.slice(21,100))}
-    currentWeather = !currentWeather
+function weatherButtonFunction(swapButton=true) {
+    if (swapButton) { currentWeather = !currentWeather }
+    
+    if (currentWeather) {
+        updateImage(currentImage, getBackgroundURL(currentIndex))
+        currentImage = getBackgroundURL(currentIndex)
+    }
+    else {
+        updateImage(currentImage, getBackgroundURL(currentIndex))
+        currentImage = getBackgroundURL(currentIndex)
+    }
+
     weatherButton.innerHTML = (currentWeather) ? "clear" : "rain";
-    console.log(currentWeather)
 }
 
 weatherSyncButton.addEventListener('click', getWeatherByLocation)
@@ -325,12 +333,14 @@ function getWeatherByLocation() {
             const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeather}`);
             const data = await res.json();
             
-            // Short-circuit evaluation: sets 1 if raining, 0 otherwise
+            // sets 1 if raining, 0 otherwise
             currentWeather = (data.weather?.[0]?.main === 'Rain' || data.rain) ? 1 : 0;
             
-            console.log(`Current Weather Flag: ${currentWeather}`);
-        } catch (err) {
-            console.error("Failed to check weather:", err);
+            console.log(`${data.weather?.[0]?.main}`);
+            weatherButtonFunction(false)
+
+        } catch (error) {
+            console.error(error);
         }
     });
 }
