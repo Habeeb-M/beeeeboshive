@@ -279,7 +279,12 @@ ul {
     margin: 0px;
     padding-left: 20px;
 }
-
+.small {
+    font-size: 15px;
+}
+.underline {
+    text-decoration: underline;
+}
  
 
 
