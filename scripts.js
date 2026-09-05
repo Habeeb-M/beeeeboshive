@@ -786,3 +786,39 @@ function animate() {
     requestAnimationFrame(animate); //animate canvas 
 }
 animate();
+
+
+
+
+//stone button?
+const stoneButton = document.createElement("div")
+const buttonOnAudio = new Audio('./img/button_on.ogg')
+const buttonOffAudio = new Audio('./img/button_off.ogg')
+var buttonSpam = 0;
+
+function makeStoneButton() {
+    stoneButton.innerHTML = " ";
+    stoneButton.id = "stoneButton"
+    stoneButton.style.position = "fixed";
+    stoneButton.style.left = `${58.84+window.innerWidth*0.793}px`;
+    stoneButton.style.top = "600px";
+
+    document.body.appendChild(stoneButton);
+}
+window.addEventListener('load', makeStoneButton); //recalculates masonry if window size changes
+window.addEventListener('resize', makeStoneButton); //recalculates masonry if window size changes
+
+
+stoneButton.addEventListener('click', playButtonAudio)
+
+function playButtonAudio() {
+    if (buttonSpam) return
+
+    buttonOnAudio.play();
+    buttonSpam = 1;
+    setTimeout(() => {
+        buttonOffAudio.play();
+        buttonSpam = 0;
+    }, 1000);
+
+}

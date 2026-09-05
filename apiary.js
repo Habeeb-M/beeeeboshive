@@ -15,6 +15,7 @@ async function loadArticles() {
         
         const articles = await response.json();
 
+
         articles.sort((a, b) => a.number - b.number);
         articles.forEach(post => {
             if (post.ignore == true) return
@@ -83,7 +84,7 @@ async function loadHives() {
         //truncated post
         latestPostDiv.innerHTML += post.content.slice(0,3).join('');
         latestPostDiv.innerHTML += ". . . <br><br>"
-        latestPostDiv.innerHTML += `see the rest <a href=\"hives.html#${post.id}\">here!</a>`
+        latestPostDiv.innerHTML += `see the rest <a href=\"hives.html#${post.id+1}\">here!</a>`
 
     
     } catch (error) {console.error(error);}
