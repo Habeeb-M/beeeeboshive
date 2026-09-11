@@ -4,7 +4,7 @@ const articleContainer = document.getElementsByClassName("container")[0]
 
 async function loadArticles() {
     try {
-        const response = await fetch('./hives.json');
+        const response = await fetch('./orchard.json');
         
         if (!response.ok) {
             throw new Error(`response status: ${response.status}`);
@@ -42,34 +42,6 @@ async function loadArticles() {
             articleFull.innerHTML += `<span class="hiveNumber">#${post.number+1}</span>`
         })
 
-
-        //spotify
-        const spotifyIFrames = document.querySelectorAll(".spotifyIFrame")
-        for (const spotifySpan of spotifyIFrames) {
-            spotifySpan.innerHTML += `<h1>${spotifySpan.dataset.song}</h1>`
-            spotifySpan.innerHTML += `<h2>${spotifySpan.dataset.artist}</h2>`
-            spotifySpan.innerHTML += "<span>click me to load!</span>";
-            spotifySpan.style.cursor = "pointer";
-            spotifySpan.style.backgroundColor = '#' + spotifySpan.dataset.colour;
-
-            //if clicked then load the iframe
-            spotifySpan.addEventListener('click', () => {
-                spotifySpan.innerHTML = `<iframe data-testid="embed-iframe" src="https://open.spotify.com/embed/track/${spotifySpan.dataset.url}?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`
-            })
-        }
-
-
-        //youtube
-        const youtubeIFrames = document.querySelectorAll(".youtubeIFrame")
-        for (const youtubeSpan of youtubeIFrames) {
-            youtubeSpan.innerHTML += `<h1>${youtubeSpan.dataset.song}</h1>`
-            youtubeSpan.innerHTML += `<h2>${youtubeSpan.dataset.channel}</h2><br>`
-            youtubeSpan.innerHTML += "<span>click me to load youtube embed!</span>"
-
-            youtubeSpan.addEventListener('click', () => {
-                youtubeSpan.innerHTML = `<iframe src=\"https://www.youtube.com/embed/${youtubeSpan.dataset.url}\" width=\"100%\" height=\"100%\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>`
-            })
-        }
 
         //arrange
         setupMasonry()

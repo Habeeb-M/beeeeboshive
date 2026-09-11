@@ -1,5 +1,6 @@
 // FUN STUFF
 
+
 //create masonry divs
 //now doing with json. move honeyfun call and time update call and spotify call into this
 import { setupMasonry } from './scripts.js'
@@ -68,15 +69,27 @@ window.addEventListener('resize', setupMasonry); //recalculates masonry if windo
 
 
 
+//get the most recent post
 async function loadHives() {
     try {
-        const response = await fetch('./hives.json');
-        if (!response.ok) {throw new Error(`response status: ${response.status}`);}
+        const responseHives = await fetch('./hives.json');
+        if (!responseHives.ok) {throw new Error(`response status: ${responseHives.status}`);}
+        const responseOrchard = await fetch('./orchard.json');
+        if (!responseOrchard.ok) {throw new Error(`response status: ${responseOrchard.status}`);}
+
+
+        const articlesHives = await responseHives.json();
+        const articlesOrchard = await responseOrchard.json();
+        const combinedArticles = [...articlesHives, ...articlesOrchard];
+        const post = combinedArticles.reduce((latest, current) => {
+            return (current.number > latest.number) ? current : latest;
+        });
         
+        var source = "";
+        if (articlesHives.includes(post)) { source = "hives" };
+        if (articlesOrchard.includes(post)) { source = "orchard" };
 
-        const articles = await response.json();
-        const post = articles.at(-1); 
-
+        
         
         const latestPostDiv = document.getElementById("latestPost")
         latestPostDiv.innerHTML += ` <span class="italic">${post.title}</span> (${post.date})` + "<br><br>"
@@ -84,7 +97,7 @@ async function loadHives() {
         //truncated post
         latestPostDiv.innerHTML += post.content.slice(0,3).join('');
         latestPostDiv.innerHTML += ". . . <br><br>"
-        latestPostDiv.innerHTML += `see the rest <a href=\"hives.html#${post.id+1}\">here!</a>`
+        latestPostDiv.innerHTML += `see the rest <a href=\"${source}.html#${post.id+1}\">here!</a>`
 
     
     } catch (error) {console.error(error);}
@@ -272,10 +285,10 @@ function mulberry32(mySeed) {
 
 //time
 function updateTime() {
-            let now = new Date();
-            const options = { hour: 'numeric', minute: '2-digit', hour12: false };
-            document.getElementById("funCurrentTime").innerHTML = now.toLocaleTimeString([], options);
-        }
+    let now = new Date();
+    const options = { hour: 'numeric', minute: '2-digit', hour12: false };
+    document.getElementById("funCurrentTime").innerHTML = now.toLocaleTimeString([], options);
+}
         
 
 

@@ -10,33 +10,130 @@ const pauseControls = document.getElementsByClassName("pauseControls")
 var transitionSpeed = 500 //transition of bg layer
 const updateInterval = 1000; //update every second  to check if bg needs to change.. can increase this
 
-function getCurrentHour() {
+
+function modulo(a,b) { return ((a % b) + b) % b }
+
+function timeToFraction(time) {
+    return (((time.getHours() * 60 + time.getMinutes()) * 60 + time.getSeconds()) * 1000 + time.getMilliseconds())/(24*60*60*1000);
+}
+
+
+
+//4x4 gaussian solver for Ax=B... not mine
+function solveLinearSystem(matrix, constants) {
+    const n = 4;
+    
+    // Build augmented matrix
+    let aug = matrix.map((row, i) => [...row, constants[i]]);
+    for (let i = 0; i < n; i++) {
+        // Pivot selection
+        let maxRow = i;
+        for (let k = i + 1; k < n; k++) {
+            if (Math.abs(aug[k][i]) > Math.abs(aug[maxRow][i])) maxRow = k;
+        }
+        
+        // Swap rows
+        [aug[i], aug[maxRow]] = [aug[maxRow], aug[i]];
+        if (Math.abs(aug[i][i]) < 1e-12) {
+            throw new Error("Matrix is singular.");
+        }
+        // Eliminate columns below
+        for (let k = i + 1; k < n; k++) {
+            const factor = aug[k][i] / aug[i][i];
+            for (let j = i; j <= n; j++) {
+                aug[k][j] -= factor * aug[i][j];
+            }
+        }
+    }
+    // Back substitution
+    const solutions = new Array(n);
+    for (let i = n - 1; i >= 0; i--) {
+        let sum = aug[i][n];
+        for (let j = i + 1; j < n; j++) {
+            sum -= aug[i][j] * solutions[j];
+        }
+        solutions[i] = sum / aug[i][i];
+    }
+    return solutions; 
+}
+
+//solver continued. this solves for y ~ f(x) given data points and a general cubic f(x)=x**3+x**2+x+c. not mine
+function cubicRegression(x, y) {
+    //make A and B
+    const matrix = [];
+    const constants = [];
+
+    for (let i = 0; i < 4; i++) {
+        matrix.push([x[i] ** 3, x[i] ** 2, x[i], 1]);
+        constants.push(y[i]);
+    }
+
+    // 2. Solve for cubic polynomial coefficients [a3, a2, a1, a0]
+    const [a3, a2, a1, a0] = solveLinearSystem(matrix, constants);
+
+    if (Math.abs(a3) < 1e-12) {
+        throw new Error("a3 is zero...");
+    }
+
+    // 3. Map back to original parameters (A, B, C, D)
+    const B = 1 / a3;
+    const A = -a2 / (3 * a3);
+    const D = a1 - (a2 ** 2) / (3 * a3);
+    const C = a0 - (a2 ** 3) / (27 * a3 ** 2);
+
+    return { A, B, C, D };
+}
+
+
+//local times getter, fits to a cubic
+import * as SunCalc from 'https://cdn.jsdelivr.net/npm/suncalc@2.0.2/+esm';
+async function getLocalTimeFunction() {
+    try {
+        const response = await fetch('https://free.freeipapi.com/api/json/');
+        const data = await response.json(); 
+
+        
+        const lat = data.latitude;
+        const lng = data.longitude;
+        const today = new Date();
+        const sunTimes = SunCalc.getTimes(today, lat, lng);
+        
+        const nightEndTime = timeToFraction(sunTimes.nightEnd)*24
+        const sunriseTime = timeToFraction(sunTimes.sunrise)*24
+        const sunsetTime = timeToFraction(sunTimes.sunset)*24
+        const nightTime = timeToFraction(sunTimes.night)*24
+        
+        const localTimes = [nightEndTime, sunriseTime, sunsetTime, nightTime]
+        const mcTimes = [1, 4, 17, 20];
+
+
+        //now fit this to a cubic + linear
+        const parameters = cubicRegression(localTimes, mcTimes);
+
+        return parameters
+
+        } catch (error) {
+            console.error("errored fetching long/lat for background:", error);
+        }
+}
+const cubicParameters = await getLocalTimeFunction()
+
+function localTimeCubic(x) {//this...
+    //this kind of maps realtime to minecraft time...
+    //so now sunset time, gotten from ip, will map to 21 in mctime, which is sunset ish
+    return ((x-cubicParameters.A)**3)/cubicParameters.B + cubicParameters.C + cubicParameters.D*x
+}
+
+
+function getCurrentHour() { //original
     let date = new Date();
     return date.getHours();
 }
 
-function modulo(a,b) { return ((a % b) + b) % b }
-
-
-//blinky title
-const title = document.getElementById("titletext")
-const titleLength = title.innerHTML.length-(93+6*ellipsisNumber)
-const ellipsis = document.getElementsByClassName("hidden")
-var ellipsisNumber = 0;
-
-function blinkyEllipsis() {
-    //console.log(ellipsisNumber)
-
-    if (ellipsisNumber==3) {
-        for (let dot of ellipsis) {dot.classList.remove("shown")}
-    }
-    else {
-        ellipsis[ellipsisNumber].classList.add("shown")
-    }
-
-    ellipsisNumber = (ellipsisNumber + 1) % 4
+function getMcHour() { 
+    let date = new Date();
+    return Math.floor(localTimeCubic(date.getHours()))
 }
-setInterval(blinkyEllipsis, 500)
 
 
 
@@ -46,6 +143,8 @@ setInterval(blinkyEllipsis, 500)
 //////////////////////
 
 //change currentimage to nextimage
+let currentImage = "";
+let currentIndex = undefined;
 function updateImage(currentImage, nextImage) {
     if (nextImage != currentImage) {
         console.log(`changing ${currentImage} to ${nextImage}`)
@@ -60,24 +159,70 @@ function updateImage(currentImage, nextImage) {
 }
 
 
-let currentImage = "";
-let currentIndex = undefined;
+
 //hour sets currentindex, updates background and currentimage if different
+//actually it pulls from getcurrenthour which is adjusted to map mctime
 function backgroundUpdate() {
     if (desyncCheckbox.checked) return; //don't run if unsynced
-    
+
     currentIndex = getCurrentHour() 
 
     let nextImage = getBackgroundURL(currentIndex)
     updateImage(currentImage, nextImage)
     currentImage = nextImage //update currentimage
 }
-let backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval); //and run this every updateinterval
+let backgroundUpdateInterval = null; //this is in the desync function now
 
 
 function getBackgroundURL(index) {
-    return (currentWeather) ? `url('img/background/r${index}.png')` : `url('img/background/${index}.png')`
+    const mcIndex = Math.floor(getMcHour(index))
+    return (currentWeather) ? `url('img/background/r${mcIndex}.png')` : `url('img/background/${mcIndex}.png')`
 }
+
+
+//weather stuff
+//say 0 is clear and 1 is rain; initialise
+let currentWeather = 0;
+
+function weatherButtonFunction(swapButton=true) {
+    if (swapButton) { currentWeather = !currentWeather }
+    
+    if (currentWeather) {
+        updateImage(currentImage, getBackgroundURL(currentIndex))
+        currentImage = getBackgroundURL(currentIndex)
+    }
+    else {
+        updateImage(currentImage, getBackgroundURL(currentIndex))
+        currentImage = getBackgroundURL(currentIndex)
+    }
+
+    weatherButton.innerHTML = (currentWeather) ? "clear" : "rain";
+}
+
+weatherSyncButton.addEventListener('click', getWeatherByLocation)
+
+const openWeather = '2bff7b6c31dc3ae8697e2a77af6f3d76'; //don't steal this it's literally free to get one
+function getWeatherByLocation() {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            const { latitude: lat, longitude: lon } = pos.coords;
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeather}`);
+            const data = await res.json();
+            
+            // sets 1 if raining, 0 otherwise
+            currentWeather = (data.weather?.[0]?.main === 'Rain' || data.rain) ? 1 : 0;
+            
+            console.log(`${data.weather?.[0]?.main}`);
+            weatherButtonFunction(false)
+
+        } catch (error) {
+            console.error(error);
+        }
+    });
+}
+
+
+
 
 
 //VIDEO TRANSITION
@@ -101,11 +246,13 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
     else {
         videoLayer.pause();
 
-        let oldIndex = currentIndex //transition from desynced to synced
-        currentIndex = getCurrentHour();
-        let nextImage = getBackgroundURL(currentIndex);
-        updateImage(getBackgroundURL(oldIndex), nextImage);
-        currentImage = nextImage; // Synchronize global string state tracking
+        if (currentIndex) {//so it doesnt run on site
+            let oldIndex = currentIndex //transition from desynced to synced
+            currentIndex = getCurrentHour();
+            let nextImage = getBackgroundURL(currentIndex);
+            updateImage(getBackgroundURL(oldIndex), nextImage);
+            currentImage = nextImage; 
+        }
 
         backgroundUpdateInterval = setInterval(backgroundUpdate, updateInterval);
         for (let elem of pauseControls) {
@@ -117,7 +264,8 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
         weatherButton.removeEventListener('click', weatherButtonFunction);
     }
 }
-window.addEventListener('DOMContentLoaded', desyncFunction) //run on site load 
+if (document.readyState === 'loading') { window.addEventListener('DOMContentLoaded', desyncFunction); } //run on site load
+else { desyncFunction(); }
 document.getElementById('desyncCheckbox').addEventListener('click', desyncFunction);
 
 
@@ -150,7 +298,7 @@ function linearVideo() { //depreciated
 function easeFunction(x, a) {//a is like a scaling
     return Math.min(5, 1+4*a*x, 1+4*a*(1-x))
 }
-//make this better for longer videos - TODO
+
 
 function inverseEase(x, a) { //this is the inverse indextotime??
     return x/5
@@ -192,9 +340,8 @@ function easedVideo(startIndex, stopIndex) {
     const totalTime = modulo(stopTime-startTime, 120);
 
     //set video, start time
-    console.log("log", currentWeather)
     videoLayer.src = (currentWeather) ? 'img/background/rbg-video.mp4' : 'img/background/bg-video.mp4'
-    videoLayer.currentTime = indexToTime(startIndex);
+    videoLayer.currentTime = startTime;
     videoLayer.addEventListener('ended', () => videoLayer.play()); //have to loop manually
 
     //buttons
@@ -290,7 +437,6 @@ function easedVideo(startIndex, stopIndex) {
 
 
 
-
 //const startInput = document.getElementById('startInput'); temporary start button
 const sendButton = document.getElementById('sendButton');
 
@@ -302,48 +448,6 @@ sendButton.addEventListener('click', function() { //start animation on click
 });
 
 
-
-
-//weather stuff
-//say 0 is clear and 1 is rain; initialise
-let currentWeather = 0;
-
-function weatherButtonFunction(swapButton=true) {
-    if (swapButton) { currentWeather = !currentWeather }
-    
-    if (currentWeather) {
-        updateImage(currentImage, getBackgroundURL(currentIndex))
-        currentImage = getBackgroundURL(currentIndex)
-    }
-    else {
-        updateImage(currentImage, getBackgroundURL(currentIndex))
-        currentImage = getBackgroundURL(currentIndex)
-    }
-
-    weatherButton.innerHTML = (currentWeather) ? "clear" : "rain";
-}
-
-weatherSyncButton.addEventListener('click', getWeatherByLocation)
-
-const openWeather = '2bff7b6c31dc3ae8697e2a77af6f3d76'; //don't steal this it's literally free to get one
-function getWeatherByLocation() {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        try {
-            const { latitude: lat, longitude: lon } = pos.coords;
-            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeather}`);
-            const data = await res.json();
-            
-            // sets 1 if raining, 0 otherwise
-            currentWeather = (data.weather?.[0]?.main === 'Rain' || data.rain) ? 1 : 0;
-            
-            console.log(`${data.weather?.[0]?.main}`);
-            weatherButtonFunction(false)
-
-        } catch (error) {
-            console.error(error);
-        }
-    });
-}
 
 
 
@@ -500,6 +604,26 @@ window.addEventListener('resize', setupMasonry); //recalculates masonry if windo
 /////////
 // FUN //
 /////////
+
+//blinky title
+const title = document.getElementById("titletext")
+const titleLength = title.innerHTML.length-(93+6*ellipsisNumber)
+const ellipsis = document.getElementsByClassName("hidden")
+var ellipsisNumber = 0;
+
+function blinkyEllipsis() {
+    //console.log(ellipsisNumber)
+
+    if (ellipsisNumber==3) {
+        for (let dot of ellipsis) {dot.classList.remove("shown")}
+    }
+    else {
+        ellipsis[ellipsisNumber].classList.add("shown")
+    }
+
+    ellipsisNumber = (ellipsisNumber + 1) % 4
+}
+setInterval(blinkyEllipsis, 500)
 
 //moveable boxe things
 const moveCheckbox = document.getElementById("moveCheckbox")
@@ -664,7 +788,7 @@ const ctx = canvas.getContext('2d');
 
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
+    canvas.width = window.innerWidth-15;
     canvas.height = 4000; //err this needs to b height of page but the comments section loads slowly...
 }
 window.addEventListener('resize', resizeCanvas);

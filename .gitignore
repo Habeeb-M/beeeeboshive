@@ -1,4 +1,3 @@
 img/
 .well-known/
-apiary.json
-hives.json
+*.json

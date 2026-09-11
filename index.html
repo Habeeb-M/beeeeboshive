@@ -26,7 +26,7 @@
     <!--title stuff-->
     <div class="title">
         <img src="img/logo.png">
-        <span id="titletext">the apiary<span class="hidden">.</span><span class="hidden">.</span><span class="hidden">.</span></span>
+        <span id="titletext" title="---home page!">the apiary<span class="hidden">.</span><span class="hidden">.</span><span class="hidden">.</span></span>
     </div>
 
 
@@ -34,9 +34,9 @@
     <div class="page">
       <div class="sidebar">
         <nav class="placeholder nav">
-          <a>[apiary]</a><br>
-          <a href="./hives.html">hives</a><br>
-          <a href="">testuble</a><br>
+          <a title="---home page!">[apiary]</a><br>
+          <a title="---misc writing!" href="./hives.html">hives</a><br>
+          <a title="---OC writing!" href="./orchard.html">orchard</a><br>
         </nav>
       
         <div class="placeholder controls nav">
@@ -56,7 +56,7 @@
           </label> <br>
         
           <label for="stopIndex" class="pauseControls" width="100px">progress to:</label>
-          <input id="stopIndex" type="number" value="18" max="24" class="pauseControls">
+          <input id="stopIndex" type="number" value="23" max="24" class="pauseControls">
           <button id="sendButton" class="pauseControls">send!</button>
           <button id="pauseButton" class="pauseControls" disabled>pause</button>
           <button id="weatherButton" class="pauseControls">rain</button>
@@ -82,11 +82,9 @@
       <div class="container"></div>  
     </div>
 
-    
 
-    
-    
-    
+
+    <ws-widget width="100%" height="100%" type="cursor" iid="10702" embed="script"></ws-widget>
     <script type="module" src="./scripts.js"></script>
     <script type="module" src="./apiary.js"></script>
   </body>
