@@ -85,7 +85,7 @@ function cubicRegression(x, y) {
 }
 
 
-//local times getter, fits to a cubic
+//local times getter, grabs rough location and finds out sunrise sunset stuff
 import * as SunCalc from 'https://cdn.jsdelivr.net/npm/suncalc@2.0.2/+esm';
 async function getLocalTimeFunction() {
     try {
@@ -104,7 +104,7 @@ async function getLocalTimeFunction() {
         const nightTime = timeToFraction(sunTimes.night)*24
         
         const localTimes = [nightEndTime, sunriseTime, sunsetTime, nightTime]
-        const mcTimes = [1, 4, 17, 20];
+        const mcTimes = [1, 4, 17, 20]; //corresponding mc png
 
 
         //now fit this to a cubic + linear
@@ -125,11 +125,10 @@ function localTimeCubic(x) {//this...
 }
 
 
-function getCurrentHour() { //original
+function getHour() { 
     let date = new Date();
-    return date.getHours();
+    return date.getHours()
 }
-
 function getMcHour() { 
     let date = new Date();
     return Math.floor(localTimeCubic(date.getHours()))
@@ -161,13 +160,13 @@ function updateImage(currentImage, nextImage) {
 
 
 //hour sets currentindex, updates background and currentimage if different
-//actually it pulls from getcurrenthour which is adjusted to map mctime
+//actually it pulls from getmchour which is adjusted to map mctime
 function backgroundUpdate() {
     if (desyncCheckbox.checked) return; //don't run if unsynced
 
-    currentIndex = getCurrentHour() 
+    currentIndex = getMcHour() 
 
-    let nextImage = getBackgroundURL(currentIndex)
+    let nextImage = getBackgroundURL((currentIndex))
     updateImage(currentImage, nextImage)
     currentImage = nextImage //update currentimage
 }
@@ -175,8 +174,7 @@ let backgroundUpdateInterval = null; //this is in the desync function now
 
 
 function getBackgroundURL(index) {
-    const mcIndex = Math.floor(getMcHour(index))
-    return (currentWeather) ? `url('img/background/r${mcIndex}.png')` : `url('img/background/${mcIndex}.png')`
+    return (currentWeather) ? `url('img/background/r${index}.png')` : `url('img/background/${index}.png')`
 }
 
 
@@ -237,7 +235,7 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
         for (let elem of pauseControls) { //reveal controls
             elem.style.display = "";
         }
-        backgroundTime(currentIndex); //show simulated time
+        backgroundTime(getHour()); //show simulated time
 
         //weather button
         weatherButton.addEventListener('click', weatherButtonFunction);
@@ -246,9 +244,9 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
     else {
         videoLayer.pause();
 
-        if (currentIndex) {//so it doesnt run on site
+        if (currentIndex) {//so it doesnt run on site load
             let oldIndex = currentIndex //transition from desynced to synced
-            currentIndex = getCurrentHour();
+            currentIndex = getMcHour();
             let nextImage = getBackgroundURL(currentIndex);
             updateImage(getBackgroundURL(oldIndex), nextImage);
             currentImage = nextImage; 
@@ -300,7 +298,7 @@ function easeFunction(x, a) {//a is like a scaling
 }
 
 
-function inverseEase(x, a) { //this is the inverse indextotime??
+function timeToIndex(x, a) { //this is the inverse indextotime??
     return x/5
 }
 
@@ -314,13 +312,15 @@ function indexToTime(x) { //hour of real time to second of the video (index to i
 let liveIndex = undefined;
 let liveImage = "";
 let doLoop = false;
+let startHour = getHour() //for the bg-text time
+
 
 function easedVideo(startIndex, stopIndex) {
+    stopIndex %= 120 //in case something > 24 entered
+
     //background transition speed - set to 0 while playing
     transitionSpeed = 0
-    for (let elem of document.getElementsByClassName('bg-layer')) {
-        elem.style.transitionDelay = `${transitionSpeed}ms`
-    }
+    for (let elem of document.getElementsByClassName('bg-layer')) { elem.style.transitionDelay = `${transitionSpeed}ms` }
 
     //loop flag and stuff
     if (stopIndex < startIndex) { 
@@ -336,7 +336,7 @@ function easedVideo(startIndex, stopIndex) {
 
     //index is 0-23, time is the time of the video
     const startTime = indexToTime(startIndex)
-    const stopTime = indexToTime(stopIndex) 
+    const stopTime = indexToTime(stopIndex)
     const totalTime = modulo(stopTime-startTime, 120);
 
     //set video, start time
@@ -356,16 +356,16 @@ function easedVideo(startIndex, stopIndex) {
     //runs every 100ms, updates playbackrate, currentimage, background time, the checkplaying - stops when video does
     let playbackUpdateInterval = setInterval(playbackRateUpdate, 100); 
     function playbackRateUpdate() {
-        //console.log(videoLayer.currentTime,easeFunction(modulo((videoLayer.currentTime-startTime)/totalTime,1),totalTime+1))
-        //console.log(videoLayer.currentTime, inverseEase(videoLayer.currentTime, totalTime+1))
 
         videoLayer.playbackRate = easeFunction(modulo((videoLayer.currentTime-startTime)/totalTime,1), totalTime+1)
 
-        if (doLoop == true || (stopTime - videoLayer.currentTime > 0.2 && doLoop == false)) {//near end
-            liveIndex = Math.floor((videoLayer.currentTime)/5) % 24
+        if (doLoop == true || (stopTime - videoLayer.currentTime > 0.2 && doLoop == false)) {//while playing
+            liveIndex = Math.floor(timeToIndex(videoLayer.currentTime)) % 24
             updateIndexAndImage();
-        
-            backgroundTime(inverseEase(videoLayer.currentTime))
+
+            //originally this could read the video time directly but
+            //now in mc time i have to get the progress in the video and calculate it
+            backgroundTime(startHour+((stopIndex-startHour+24) % 24)*((videoLayer.currentTime-startTime+120)%120)/totalTime)
         }
 
         checkPlaying()
@@ -385,10 +385,11 @@ function easedVideo(startIndex, stopIndex) {
             //update time to recent liveindex time and image instantly
             //also as it stops just before need to update manually
             liveIndex = stopIndex;
-            backgroundTime(inverseEase(stopTime))        
+            backgroundTime(timeToIndex(stopTime))        
             updateIndexAndImage();
             console.log("updated")
             setTimeout(() => stoppingFunction("stopped"), 20)
+            startHour = liveIndex //may need to copy this to other stops
             return
         }
     }
