@@ -309,21 +309,23 @@ function indexToTime(x) { //hour of real time to second of the video (index to i
 
 
 //actual video transition
-let liveIndex = undefined;
+let liveIndex = null;
 let liveImage = "";
 let doLoop = false;
-let startHour = getHour() //for the bg-text time
+let stopMcIndex = null;
+let timeStartText = getHour();
 
 
 function easedVideo(startIndex, stopIndex) {
-    stopIndex %= 120 //in case something > 24 entered
+    stopIndex %= 24
+    stopMcIndex = Math.floor(localTimeCubic(stopIndex)) //in case something > 24 entered
 
     //background transition speed - set to 0 while playing
     transitionSpeed = 0
     for (let elem of document.getElementsByClassName('bg-layer')) { elem.style.transitionDelay = `${transitionSpeed}ms` }
 
     //loop flag and stuff
-    if (stopIndex < startIndex) { 
+    if (stopMcIndex < startIndex) { 
         doLoop = true
         videoLayer.addEventListener('ended', loopFunction);
         function loopFunction() {
@@ -336,7 +338,7 @@ function easedVideo(startIndex, stopIndex) {
 
     //index is 0-23, time is the time of the video
     const startTime = indexToTime(startIndex)
-    const stopTime = indexToTime(stopIndex)
+    const stopTime = indexToTime(stopMcIndex)
     const totalTime = modulo(stopTime-startTime, 120);
 
     //set video, start time
@@ -365,7 +367,7 @@ function easedVideo(startIndex, stopIndex) {
 
             //originally this could read the video time directly but
             //now in mc time i have to get the progress in the video and calculate it
-            backgroundTime(startHour+((stopIndex-startHour+24) % 24)*((videoLayer.currentTime-startTime+120)%120)/totalTime)
+            backgroundTime(timeStartText+((stopIndex-timeStartText+24) % 24)*((videoLayer.currentTime-startTime+120)%120)/totalTime)
         }
 
         checkPlaying()
@@ -384,12 +386,12 @@ function easedVideo(startIndex, stopIndex) {
         if (stopTime - videoLayer.currentTime <= 0.2 && doLoop == false) { //when stops naturally
             //update time to recent liveindex time and image instantly
             //also as it stops just before need to update manually
-            liveIndex = stopIndex;
-            backgroundTime(timeToIndex(stopTime))        
+            liveIndex = stopMcIndex;
+            timeStartText = stopIndex;
+            backgroundTime(stopIndex)        
             updateIndexAndImage();
             console.log("updated")
             setTimeout(() => stoppingFunction("stopped"), 20)
-            startHour = liveIndex //may need to copy this to other stops
             return
         }
     }
