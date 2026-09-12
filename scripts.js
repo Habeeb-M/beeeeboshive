@@ -3,6 +3,7 @@ const bottomLayer = document.getElementById("bg-bottom")
 const topLayer = document.getElementById("bg-top")
 const videoLayer = document.getElementById("bg-video")
 const desyncCheckbox = document.getElementById("desyncCheckbox")
+const sendButton = document.getElementById("sendButton")
 const pauseButton = document.getElementById("pauseButton")
 const weatherButton = document.getElementById("weatherButton")
 const weatherSyncButton = document.getElementById("weatherSyncButton")
@@ -227,6 +228,7 @@ function getWeatherByLocation() {
 videoLayer.style.display = "none";
 
 // desync functionality
+let timeStartText = null;
 function desyncFunction() { //desync checkbox and turn on skipping controls
     const isDesynced = desyncCheckbox.checked 
 
@@ -243,6 +245,7 @@ function desyncFunction() { //desync checkbox and turn on skipping controls
     }
     else {
         videoLayer.pause();
+        timeStartText = getHour()
 
         if (currentIndex) {//so it doesnt run on site load
             let oldIndex = currentIndex //transition from desynced to synced
@@ -313,7 +316,6 @@ let liveIndex = null;
 let liveImage = "";
 let doLoop = false;
 let stopMcIndex = null;
-let timeStartText = getHour();
 
 
 function easedVideo(startIndex, stopIndex) {
@@ -349,6 +351,8 @@ function easedVideo(startIndex, stopIndex) {
     //buttons
     pauseButton.disabled = false;
     weatherButton.disabled = true;
+    sendButton.disabled = true;
+
 
     //unhide and play video
     videoLayer.style.display = "";
@@ -400,9 +404,12 @@ function easedVideo(startIndex, stopIndex) {
     pauseButton.addEventListener('click', pauseButtonFunction) 
     function pauseButtonFunction() {
         stoppingFunction("paused");
-        
-        backgroundTime(liveIndex);
+        let pauseTime = Math.floor(timeStartText+((stopIndex-timeStartText+24) % 24)*((videoLayer.currentTime-startTime+120)%120)/totalTime)
+        startIndex = pauseTime;
+        backgroundTime(pauseTime);
+        timeStartText = pauseTime;
         updateIndexAndImage();
+        pauseButton.removeEventListener('click', pauseButtonFunction)
         return
     }
 
@@ -434,14 +441,9 @@ function easedVideo(startIndex, stopIndex) {
         //add buttons
         pauseButton.disabled = true;
         weatherButton.disabled = false;
+        sendButton.disabled = false;
     }
 }   
-
-
-
-
-//const startInput = document.getElementById('startInput'); temporary start button
-const sendButton = document.getElementById('sendButton');
 
 sendButton.addEventListener('click', function() { //start animation on click
     const stopIndex = parseFloat(document.getElementById('stopIndex').value);
