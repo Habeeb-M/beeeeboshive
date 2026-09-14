@@ -132,7 +132,7 @@ function getHour() {
 }
 function getMcHour() { 
     let date = new Date();
-    return Math.floor(localTimeCubic(date.getHours()))
+    return Math.max(0, Math.min(23, Math.floor(localTimeCubic(date.getHours())))); //truncate to 0-23
 }
 
 
