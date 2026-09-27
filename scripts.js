@@ -531,8 +531,9 @@ export function setupMasonry() {
     const container = document.querySelector('.container');
     const items = container.querySelectorAll('.container div');
 
-    let mobileFlag = false
-    if (window.innerWidth < 767) { mobileFlag = true }
+    let mobileFlag = 0
+    if (window.innerWidth < 767) { mobileFlag = 1 }
+    if (window.innerWidth < 522) { mobileFlag = 2 }
 
     let masonColumn = -1
     let masonBottoms = []
@@ -585,7 +586,8 @@ export function setupMasonry() {
             }
         }
 
-        else if (mobileFlag) {
+        else if (mobileFlag == 1) {
+            mobileMove()
             item.style.width = `${divWidth(window.innerWidth, parseInt(item.dataset.multipleWidth), true)}px`
             if (masonBottoms.length < 2) {//place the first two
                 masonColumn += 1
@@ -627,6 +629,15 @@ export function setupMasonry() {
             }
         }
 
+        else if (mobileFlag == 2) {
+            mobileMove()
+            item.style.width = `${divWidth(window.innerWidth, parseInt(2), true)}px` //make everything width 2
+            masonColumn = 0
+            item.style.left = `${divLeft(masonColumn, true)}px`;
+            item.style.top = `${((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
+            masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+        }
+
 
         //console.log(item.dataset.id, masonBottoms)
     }
@@ -643,6 +654,7 @@ function mobileMove() {
     const links = document.getElementsByClassName("links")[0]
     const container = document.getElementsByClassName("container")[0]
     const titletext = document.getElementById("titletext")
+    const bgtext = document.getElementById("bg-text")
     const containerdivs = document.querySelectorAll(".container div")
 
     if (window.innerWidth > 767) { //reset if landscape
@@ -656,6 +668,8 @@ function mobileMove() {
         controls.style.display = "";
         container.style.gridColumn = "";
         container.style.gridRow = "";
+        bgtext.style.display = "";
+        document.documentElement.style.fontSize = "22px";
 
         //for (let item of containerdivs) {
             //item.style.minWidth = ""
@@ -674,12 +688,14 @@ function mobileMove() {
     controls.style.display = "none";
     container.style.gridColumn = "1";
     container.style.gridRow = "2";
+    bgtext.style.display = "none";
+    document.documentElement.style.fontSize = "18px";
 
     //for (let item of containerdivs) {
       //  item.style.width="500px"  
     //}
 }
-window.addEventListener('DOMContentLoaded', mobileMove); //run on page load
+window.addEventListener('load', mobileMove); //run on page load
 window.addEventListener('resize', mobileMove); //recalculates masonry if window size changes
 
 
