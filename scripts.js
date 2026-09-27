@@ -517,7 +517,7 @@ export function divWidth(x, multipleWidth, mobile=false) {
     if (!mobile) { return Math.min(270, Math.max(220, 0.232*x+0))*multipleWidth + 10*(multipleWidth-1) }
     else { 
         multipleWidth = Math.min(multipleWidth, 2)
-        console.log(multipleWidth)
+        //console.log(multipleWidth)
         return Math.min(267.5, Math.max(220, 0.333*x+27))*multipleWidth + 10*(multipleWidth-1) 
     }
 } 
@@ -567,10 +567,9 @@ export function setupMasonry() {
                         masonTop = `${5 + ((masonBottoms[masonColumn+1]) ? masonBottoms[masonColumn+1] : 0)}px`
                     }
 
-                    if (masonColumn == 2) {//if it is in 3rd column then take the lower one from the first two
-                        //console.log("double conflict")
-                        masonColumn = masonBottoms.indexOf(Math.min(masonBottoms[0],masonBottoms[1]))
-                        masonTop = `${5 + masonBottoms[masonColumn+1]}px`
+                    if (masonColumn == 2) {
+                        masonColumn = masonBottoms[0] > masonBottoms[1] ? 1 : 0;
+                        masonTop = `${5 + Math.max(masonBottoms[masonColumn], masonBottoms[masonColumn + 1])}px`;
                     }
                 }
 
