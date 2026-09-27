@@ -513,8 +513,17 @@ function backgroundTime(arg) {
 
 //recreating css width for a proper masonry function, and the corresponding left coordinate
 //220 is width of sidebar, 10 width of margin, 270 is max width. .232 seems to match the background resize
-export function divWidth(x, multipleWidth) {  return Math.min(270, Math.max(220, 0.232*x+0))*multipleWidth + 10*(multipleWidth-1) } 
-function divLeft(x) { return divWidth(window.innerWidth,1)*x + 10*x }
+export function divWidth(x, multipleWidth, mobile=false) {  
+    if (!mobile) { return Math.min(270, Math.max(220, 0.232*x+0))*multipleWidth + 10*(multipleWidth-1) }
+    else { 
+        multipleWidth = Math.min(multipleWidth, 2)
+        console.log(multipleWidth)
+        return Math.min(267.5, Math.max(220, 0.333*x+27))*multipleWidth + 10*(multipleWidth-1) 
+    }
+} 
+function divLeft(x, mobile=false) { 
+    return divWidth(window.innerWidth, 1, mobile)*x + 10*x
+}
 
 export function setupMasonry() {
     if (moveCheckbox.checked) { return }
@@ -522,54 +531,100 @@ export function setupMasonry() {
     const container = document.querySelector('.container');
     const items = container.querySelectorAll('.container div');
 
+    let mobileFlag = false
+    if (window.innerWidth < window.innerHeight + 30) { mobileFlag = true }
 
     let masonColumn = -1
     let masonBottoms = []
     for (let item of items) {
         //for all the placed items, set their width according to windowsize and multiplewidth
-        item.style.width = `${divWidth(window.innerWidth, parseInt(item.dataset.multipleWidth))}px`
 
         //for the first row, set their top and left, and set masonbottoms[masoncolumn] to the bottom. 
         //if multiple width make sure to skip columns and append to masonbottoms
-        if (masonBottoms.length < 3) {
-            
-            masonColumn += 1
-            item.style.left = `${divLeft(masonColumn)}px`;
-            item.style.top = `${((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
-            masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
-
-            for (let step = 1; step < item.dataset.multipleWidth; step++) {
+        if (!mobileFlag) {
+            item.style.width = `${divWidth(window.innerWidth, parseInt(item.dataset.multipleWidth))}px`
+            if (masonBottoms.length < 3) {
+                
                 masonColumn += 1
+                item.style.left = `${divLeft(masonColumn)}px`;
+                item.style.top = `${((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
                 masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+
+                for (let step = 1; step < item.dataset.multipleWidth; step++) {
+                    masonColumn += 1
+                    masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+                }
+            }
+
+            else { //after first three placed
+
+                masonColumn = masonBottoms.indexOf(Math.min(...masonBottoms)) //find the minimum bottom's index and add to this column 
+                let masonTop = `${5 + ((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
+
+                if (item.dataset.multipleWidth == 2) {//but if its multiplewidth it might overlap with an earlier element, so take the lower one
+                    if (masonBottoms[masonColumn+1] > masonBottoms[masonColumn]) {
+                        //console.log("conflict!")
+                        masonTop = `${5 + ((masonBottoms[masonColumn+1]) ? masonBottoms[masonColumn+1] : 0)}px`
+                    }
+
+                    if (masonColumn == 2) {//if it is in 3rd column then take the lower one from the first two
+                        //console.log("double conflict")
+                        masonColumn = masonBottoms.indexOf(Math.min(masonBottoms[0],masonBottoms[1]))
+                        masonTop = `${5 + masonBottoms[masonColumn+1]}px`
+                    }
+                }
+
+                //console.log(masonColumn)
+                item.style.left = `${divLeft(masonColumn)}px`; 
+                item.style.top = masonTop;
+                masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+
+                for (let step = 1; step < item.dataset.multipleWidth; step++) {//same multiplewidth check
+                    masonColumn += 1
+                    masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+                }
             }
         }
 
-        else { //after first three placed
+        else if (mobileFlag) {
+            item.style.width = `${divWidth(window.innerWidth, parseInt(item.dataset.multipleWidth), true)}px`
+            if (masonBottoms.length < 2) {//place the first two
+                masonColumn += 1
+                item.style.left = `${divLeft(masonColumn, true)}px`;
+                item.style.top = `${((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
+                masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
 
-            masonColumn = masonBottoms.indexOf(Math.min(...masonBottoms)) //find the minimum bottom's index and add to this column 
-            let masonTop = `${5 + ((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
-
-            if (item.dataset.multipleWidth == 2) {//but if its multiplewidth it might overlap with an earlier element, so take the lower one
-                if (masonBottoms[masonColumn+1] > masonBottoms[masonColumn]) {
-                    //console.log("conflict!")
-                    masonTop = `${5 + ((masonBottoms[masonColumn+1]) ? masonBottoms[masonColumn+1] : 0)}px`
-                }
-
-                if (masonColumn == 2) {//if it is in 3rd column then take the lower one from the first two
-                    //console.log("double conflict")
-                    masonColumn = masonBottoms.indexOf(Math.min(masonBottoms[0],masonBottoms[1]))
-                    masonTop = `${5 + masonBottoms[masonColumn+1]}px`
+                for (let step = 1; step < item.dataset.multipleWidth; step++) {
+                    masonColumn += 1
+                    masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
                 }
             }
 
-            //console.log(masonColumn)
-            item.style.left = `${divLeft(masonColumn)}px`; 
-            item.style.top = masonTop;
-            masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+            else { //after first two placed
+                masonColumn = masonBottoms.indexOf(Math.min(...masonBottoms)) //find the minimum bottom's index and add to this column 
+                let masonTop = `${5 + ((masonBottoms[masonColumn]) ? masonBottoms[masonColumn] : 0)}px`
 
-            for (let step = 1; step < item.dataset.multipleWidth; step++) {//same multiplewidth check
-                masonColumn += 1
+                if (item.dataset.multipleWidth == 2) {
+                    if (masonColumn == 1) { //if width 2 and second column go to width 1
+                        masonColumn -= 1
+                        masonTop = `${5 + masonBottoms[0]}px`
+                    }
+
+                    if (masonBottoms[masonColumn+1] > masonBottoms[masonColumn]) { //overlap check
+                            //console.log("conflict!")
+                        masonTop = `${5 + ((masonBottoms[masonColumn+1]) ? masonBottoms[masonColumn+1] : 0)}px`
+                    }
+                }
+
+                //console.log(masonColumn)
+                item.style.left = `${divLeft(masonColumn, true)}px`; 
+                item.style.top = masonTop;
                 masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+
+                for (let step = 1; step < item.dataset.multipleWidth; step++) {//same multiplewidth check
+                    masonColumn += 1
+                    masonBottoms[masonColumn] = item.offsetTop + item.offsetHeight
+                }
             }
         }
 
@@ -581,6 +636,50 @@ export function setupMasonry() {
 window.addEventListener('load', setupMasonry); //run on page load
 window.addEventListener('resize', setupMasonry); //recalculates masonry if window size changes
 
+
+function mobileMove() {
+    const sidebar = document.getElementsByClassName("sidebar")[0]
+    const controls = document.getElementsByClassName("controls")[0]
+    const socials = document.getElementsByClassName("socials")[0]
+    const links = document.getElementsByClassName("links")[0]
+    const container = document.getElementsByClassName("container")[0]
+    const titletext = document.getElementById("titletext")
+    const containerdivs = document.querySelectorAll(".container div")
+
+    if (window.innerWidth > window.innerHeight + 30) { //reset if landscape
+        links.style.width = "";
+        links.style.height = "";
+        sidebar.style.minWidth = "0px";
+        socials.style.width = "150px";
+        titletext.style.marginLeft = "";
+        links.innerHTML = links.innerHTML.replace(/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|\u00A0/g, "<br>");
+        controls.style.display = "";
+        container.style.gridColumn = "";
+        container.style.gridRow = "";
+
+        //for (let item of containerdivs) {
+            //item.style.minWidth = ""
+        //}
+        return
+    }
+    //portrait stuff
+    links.style.width = "100%";
+    links.style.height = "30px";
+    socials.style.width = "100%";
+    sidebar.style.minWidth = "398.4px";
+    sidebar.style.width = "100%";
+    titletext.style.marginLeft = "10%";
+    links.innerHTML = links.innerHTML.replaceAll("<br>", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+    controls.style.display = "none";
+    container.style.gridColumn = "1";
+    container.style.gridRow = "2";
+
+    //for (let item of containerdivs) {
+      //  item.style.width="500px"  
+    //}
+}
+window.addEventListener('DOMContentLoaded', mobileMove); //run on page load
+window.addEventListener('resize', mobileMove); //recalculates masonry if window size changes
 
 //function setupBorder() { //not used rn
 //    const items = document.querySelectorAll('.border');

@@ -237,7 +237,7 @@ nav a {
     width: 100%;        
     max-width: 1000px; 
     grid-column: 2;     
-    grid-row: 1;        
+    grid-row: 1;       
 }
 
 .container div {
@@ -255,6 +255,10 @@ nav a {
 
 .container .articleTitle {
     font-style: italic;
+}
+
+.socials {
+    text-align: center;
 }
 
 .socials a {
