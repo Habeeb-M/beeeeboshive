@@ -441,3 +441,18 @@ ul {
 #mailingList .formkit-form {
     min-height: 100px;
 }
+
+
+@media (max-width: 768px) { 
+    .title {
+        width: 80%;
+        max-width: 510px;
+    }
+    .title img {
+        width: 100%;
+        height: auto;
+    }
+    #titletext {
+        font-size: clamp(0px,10vw,60px); 
+    }
+}

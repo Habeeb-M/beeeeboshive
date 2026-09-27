@@ -518,7 +518,7 @@ export function divWidth(x, multipleWidth, mobile=false) {
     else { 
         multipleWidth = Math.min(multipleWidth, 2)
         //console.log(multipleWidth)
-        return Math.min(267.5, Math.max(220, 0.333*x+27))*multipleWidth + 10*(multipleWidth-1) 
+        return Math.min(267.5, Math.max(114.53, 0.35125*x+14))*multipleWidth + 10*(multipleWidth-1) 
     }
 } 
 function divLeft(x, mobile=false) { 
@@ -532,7 +532,7 @@ export function setupMasonry() {
     const items = container.querySelectorAll('.container div');
 
     let mobileFlag = false
-    if (window.innerWidth < window.innerHeight + 30) { mobileFlag = true }
+    if (window.innerWidth < 767) { mobileFlag = true }
 
     let masonColumn = -1
     let masonBottoms = []
@@ -645,10 +645,11 @@ function mobileMove() {
     const titletext = document.getElementById("titletext")
     const containerdivs = document.querySelectorAll(".container div")
 
-    if (window.innerWidth > window.innerHeight + 30) { //reset if landscape
+    if (window.innerWidth > 767) { //reset if landscape
         links.style.width = "";
         links.style.height = "";
-        sidebar.style.minWidth = "0px";
+        links.style.textAlign = "";
+        //sidebar.style.minWidth = "0px";
         socials.style.width = "150px";
         titletext.style.marginLeft = "";
         links.innerHTML = links.innerHTML.replace(/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|\u00A0/g, "<br>");
@@ -663,9 +664,10 @@ function mobileMove() {
     }
     //portrait stuff
     links.style.width = "100%";
-    links.style.height = "30px";
+    links.style.height = "auto";
+    links.style.textAlign = "centre";
     socials.style.width = "100%";
-    sidebar.style.minWidth = "398.4px";
+    //sidebar.style.minWidth = "398.4px";
     sidebar.style.width = "100%";
     titletext.style.marginLeft = "10%";
     links.innerHTML = links.innerHTML.replaceAll("<br>", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
@@ -679,6 +681,7 @@ function mobileMove() {
 }
 window.addEventListener('DOMContentLoaded', mobileMove); //run on page load
 window.addEventListener('resize', mobileMove); //recalculates masonry if window size changes
+
 
 //function setupBorder() { //not used rn
 //    const items = document.querySelectorAll('.border');
@@ -1024,6 +1027,7 @@ const buttonOffAudio = new Audio('./img/button_off.ogg')
 var buttonSpam = 0;
 
 function makeStoneButton() {
+    if (window.innerWidth < 767) { return }
     stoneButton.innerHTML = " ";
     stoneButton.id = "stoneButton"
     stoneButton.style.position = "fixed";
