@@ -31,7 +31,7 @@ async function loadArticles() {
 
             //get latestpost
             if (post.id == "latestPost") { 
-                loadHives()
+                getLatestPost()
             }
             
             articleContainer.append(articleFull)
@@ -70,17 +70,20 @@ window.addEventListener('resize', setupMasonry); //recalculates masonry if windo
 
 
 //get the most recent post
-async function loadHives() {
+async function getLatestPost() {
     try {
         const responseHives = await fetch('./hives.json');
         if (!responseHives.ok) {throw new Error(`response status: ${responseHives.status}`);}
         const responseOrchard = await fetch('./orchard.json');
         if (!responseOrchard.ok) {throw new Error(`response status: ${responseOrchard.status}`);}
+        const responseSubnivium = await fetch('./subnivium.json');
+        if (!responseSubnivium.ok) {throw new Error(`response status: ${responseSubnivium.status}`);}
 
 
         const articlesHives = await responseHives.json();
         const articlesOrchard = await responseOrchard.json();
-        const combinedArticles = [...articlesHives, ...articlesOrchard];
+        const articlesSubnivium = await responseSubnivium.json();
+        const combinedArticles = [...articlesHives, ...articlesOrchard, ...articlesSubnivium];
         const post = combinedArticles.reduce((latest, current) => {
             return (current.number > latest.number) ? current : latest;
         });
@@ -88,6 +91,7 @@ async function loadHives() {
         var source = "";
         if (articlesHives.includes(post)) { source = "hives" };
         if (articlesOrchard.includes(post)) { source = "orchard" };
+        if (articlesSubnivium.includes(post)) { source = "subnivium" };
 
         
         
@@ -97,7 +101,7 @@ async function loadHives() {
         //truncated post
         latestPostDiv.innerHTML += post.content.slice(0,3).join('');
         latestPostDiv.innerHTML += ". . . <br><br>"
-        latestPostDiv.innerHTML += `see the rest <a href=\"${source}.html#${post.id+1}\">here!</a>`
+        latestPostDiv.innerHTML += `see the rest <a href=\"${source}.html#${post.number+1}\">here!</a>`
 
     
     } catch (error) {console.error(error);}
@@ -122,7 +126,7 @@ export const updateSpotify = async () => {
 
     const releaseYear = new Date(data.releaseDate)
 
-    document.getElementById("spotifyPlaying").innerHTML = (data.isPlaying) ? ("now playing... ") : ("last played... ")
+    document.getElementById("spotifyPlaying").innerHTML = (data.isPlaying) ? ("now playing. . . ") : ("last played. . . ")
     document.getElementById("spotifySong").innerHTML = `<a href="${data.songUrl}">${data.title}</a>`
     document.getElementById("spotifyArtist").innerHTML = artistList
     document.getElementById("spotifyAlbum").innerHTML = `<a href="${data.albumUrl}">${data.albumTitle}</a>`
@@ -239,25 +243,25 @@ function honeyFun() {
 
 
     //honey splash 5 - research
-    let funResearch = ["tougher comb structures are being researched...",
-        "packing algorithms are being optimised...",
-        "denser honey is being developed...",
-        "sweeter honey is being developed...",
-        "stingers are being sharpened...",
-        "stickier setae are being tested...",
-        "water resistant fuzz is being tested...",
-        "a periodic comb tiling has been discovered...",
-        "soil tests have been sent to the lab..."
+    let funResearch = ["tougher comb structures are being researched. . .",
+        "packing algorithms are being optimised. . .",
+        "denser honey is being developed. . .",
+        "sweeter honey is being developed. . .",
+        "stingers are being sharpened. . .",
+        "stickier setae are being tested. . .",
+        "water resistant fuzz is being tested. . .",
+        "a periodic comb tiling has been discovered. . .",
+        "soil tests have been sent to the lab. . ."
     ]
     let rng3 = mulberry32(rng2)*(funResearch.length-1)
 
     //honey splash 6 - status
-    let funStatus = ["hive repairs are underway...",
-        "honey leakages are being patched...",
+    let funStatus = ["hive repairs are underway. . .",
+        "honey leakages are being patched. . .",
         "queen is on break.",
-        "planning permission for a hive extension has been mailed off...",
-        "a patch of moss is growing on the hive...",
-        "polypore spores are in the air...",
+        "planning permission for a hive extension has been mailed off. . .",
+        "a patch of moss is growing on the hive. . .",
+        "polypore spores are in the air. . ."
     ]
     let rng4 = mulberry32(rng3)*(funStatus.length-1)
 

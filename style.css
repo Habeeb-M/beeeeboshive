@@ -240,7 +240,7 @@ nav a {
     grid-row: 1;       
 }
 
-.container div {
+.container > .placeholder {
     position: absolute; 
     box-sizing: border-box;
     min-width: 200px;

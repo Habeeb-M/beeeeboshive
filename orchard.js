@@ -17,7 +17,7 @@ async function loadArticles() {
             const articleFull = document.createElement("div");
             articleFull.innerHTML = post.content.join("");
             articleFull.className = "placeholder"
-            articleFull.id = post.id; 
+            articleFull.id = post.number+1; 
             articleFull.dataset.multipleWidth = post.width; 
             articleFull.dataset.date = post.date;
             articleFull.dataset.author = post.author;

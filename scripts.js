@@ -529,7 +529,7 @@ export function setupMasonry() {
     if (moveCheckbox.checked) { return }
 
     const container = document.querySelector('.container');
-    const items = container.querySelectorAll('.container div');
+    const items = container.querySelectorAll(':scope > .placeholder');
 
     let mobileFlag = 0
     if (window.innerWidth < 767) { mobileFlag = 1 }
